@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapEdit - Image Export Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pop-blue: #2563eb;
+            --pop-blue-light: #60a5fa;
+            --pop-blue-dark: #1e40af;
+            --pop-yellow: #facc15;
+            --pop-pink: #f472b6;
+            --pop-green: #4ade80;
+            --bg-main: #eff6ff;
+            --bg-card: #ffffff;
+            --text-main: #1e3a8a;
+            --shadow-pop: 6px 6px 0px #1e40af;
+            --shadow-pop-sm: 4px 4px 0px #1e40af;
+            --shadow-pop-lg: 8px 8px 0px #1e40af;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, .font-display {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .bg-fun {
+            background-color: #dbeafe;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(250, 204, 21, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(244, 114, 182, 0.1) 0%, transparent 30%);
+        }
+
+        .btn-pop {
+            font-family: 'Fredoka', sans-serif;
+            border: 3px solid var(--pop-blue-dark);
+            border-radius: 12px;
+            box-shadow: var(--shadow-pop-sm);
+            transition: all 0.15s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-pop:active {
+            transform: translate(3px, 3px);
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: var(--pop-blue);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--pop-blue-light); }
+
+        .btn-yellow {
+            background: var(--pop-yellow);
+            color: var(--pop-blue-dark);
+        }
+        .btn-yellow:hover { background: #fde047; }
+
+        .card-pop {
+            background: var(--bg-card);
+            border: 3px solid var(--pop-blue-dark);
+            border-radius: 20px;
+            box-shadow: var(--shadow-pop);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-pop:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: var(--shadow-pop-lg);
+        }
+
+        .hero-graphic {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .feature-icon {
+            border: 3px solid var(--pop-blue-dark);
+            box-shadow: var(--shadow-pop-sm);
+        }
+
+        .shape-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid var(--pop-blue-dark);
+            opacity: 0.3;
+        }
+
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, var(--pop-blue-dark) 0%, var(--pop-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* === NEW INTERACTIVE STYLES === */
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+
+        /* Typing cursor */
+        .typing-cursor {
+            display: inline-block;
+            width: 4px;
+            height: 0.9em;
+            background: var(--pop-blue-dark);
+            margin-left: 4px;
+            animation: blink 0.8s step-end infinite;
+            vertical-align: text-bottom;
+            border-radius: 2px;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Floating shapes animated */
+        .shape-float {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .shape-float-1 { animation: shapeDrift1 18s ease-in-out infinite; }
+        .shape-float-2 { animation: shapeDrift2 22s ease-in-out infinite; }
+        .shape-float-3 { animation: shapeDrift3 15s ease-in-out infinite; }
+        .shape-float-4 { animation: shapeDrift4 20s ease-in-out infinite; }
+        .shape-float-5 { animation: shapeDrift5 25s ease-in-out infinite; }
+
+        @keyframes shapeDrift1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(60px, -40px) scale(1.1); }
+            66% { transform: translate(-30px, 50px) scale(0.9); }
+        }
+        @keyframes shapeDrift2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-80px, 30px) rotate(180deg); }
+        }
+        @keyframes shapeDrift3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -60px) scale(1.2); }
+        }
+        @keyframes shapeDrift4 {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(50px, 20px); }
+            75% { transform: translate(-40px, -30px); }
+        }
+        @keyframes shapeDrift5 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(-60px, -40px) rotate(90deg) scale(1.15); }
+        }
+
+        /* Feature card expand */
+        .feature-card-inner {
+            max-height: 120px;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .feature-card.expanded .feature-card-inner {
+            max-height: 300px;
+        }
+        .feature-card .expand-icon {
+            transition: transform 0.3s ease;
+        }
+        .feature-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        .feature-extra {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+        }
+        .feature-card.expanded .feature-extra {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stat counter pulse */
+        .stat-value {
+            transition: transform 0.3s ease;
+        }
+        .stat-value.pulse {
+            animation: statPulse 0.4s ease;
+        }
+        @keyframes statPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* Code block */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 3px solid var(--pop-blue-dark);
+            border-radius: 16px;
+            box-shadow: var(--shadow-pop);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            overflow: hidden;
+        }
+        .code-block .code-header {
+            background: #334155;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .code-block .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .code-line { padding: 2px 16px; }
+        .code-line:hover { background: rgba(255,255,255,0.05); }
+        .code-keyword { color: #c084fc; }
+        .code-string { color: #86efac; }
+        .code-comment { color: #64748b; }
+        .code-func { color: #60a5fa; }
+        .code-number { color: #fbbf24; }
+        .code-prop { color: #f472b6; }
+
+        /* Copy button */
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn.copied {
+            background: var(--pop-green) !important;
+            color: var(--pop-blue-dark) !important;
+        }
+
+        /* Mini demo canvas area */
+        .demo-canvas-wrap {
+            border: 3px solid var(--pop-blue-dark);
+            border-radius: 16px;
+            box-shadow: var(--shadow-pop);
+            overflow: hidden;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .demo-canvas-wrap:active { cursor: grabbing; }
+        .demo-canvas-wrap .checker-bg {
+            background-image: 
+                linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+                linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+            background-color: #f1f5f9;
+        }
+
+        /* Zoom slider custom */
+        input[type="range"].zoom-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #bfdbfe;
+            border-radius: 4px;
+            border: 2px solid var(--pop-blue-dark);
+            outline: none;
+        }
+        input[type="range"].zoom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--pop-yellow);
+            border: 3px solid var(--pop-blue-dark);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 var(--pop-blue-dark);
+        }
+
+        /* Timeline step interactive */
+        .timeline-step {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .timeline-step:hover .step-circle {
+            transform: scale(1.1);
+        }
+        .timeline-step.active .step-circle {
+            transform: scale(1.15);
+        }
+        .timeline-step .step-detail {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+        }
+        .timeline-step.active .step-detail {
+            max-height: 200px;
+            opacity: 1;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            transform: translateY(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Mobile nav */
+        .mobile-nav {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .mobile-nav.open {
+            max-height: 300px;
+        }
+
+        /* GitHub star button */
+        .gh-star-btn {
+            transition: all 0.2s ease;
+        }
+        .gh-star-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-pop);
+        }
+        .gh-star-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: none;
+        }
+        .gh-star-btn.starred svg { fill: var(--pop-yellow); stroke: var(--pop-blue-dark); }
+
+        /* Marquee for tech stack */
+        .marquee-track {
+            display: flex;
+            gap: 24px;
+            animation: marquee 30s linear infinite;
+            width: max-content;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* Contributor avatars */
+        .contributor-avatar {
+            transition: all 0.2s ease;
+            border: 3px solid var(--pop-blue-dark);
+            box-shadow: 2px 2px 0 var(--pop-blue-dark);
+        }
+        .contributor-avatar:hover {
+            transform: translateY(-6px) scale(1.15);
+            z-index: 10;
+            box-shadow: var(--shadow-pop-sm);
+        }
+
+        /* Tab system */
+        .tab-btn {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .tab-btn.active {
+            background: var(--pop-blue);
+            color: white;
+            box-shadow: var(--shadow-pop-sm);
+            transform: translate(-2px, -2px);
+        }
+        .tab-content {
+            display: none;
+            animation: tabFadeIn 0.4s ease;
+        }
+        .tab-content.active { display: block; }
+        @keyframes tabFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pulse ring on hero graphic */
+        .pulse-ring {
+            position: absolute;
+            border: 3px solid var(--pop-yellow);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulseRing 3s ease-out infinite;
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+
+        /* Focus visible */
+        *:focus-visible {
+            outline: 3px solid var(--pop-yellow);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-fun min-h-screen flex flex-col">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="bg-green-400 border-3 border-blue-900 rounded-xl px-5 py-3 shadow-[4px_4px_0_#1e40af] flex items-center gap-3">
+            <svg class="w-5 h-5 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toast-text" class="font-bold text-sm text-blue-900">Tersalin!</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="px-6 py-4 flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-blue-600 rounded-xl border-3 border-blue-900 flex items-center justify-center shadow-[4px_4px_0_#1e40af]">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-display text-2xl font-bold text-blue-900 tracking-tight leading-none">SnapEdit</h1>
+                <span class="text-[10px] font-bold text-yellow-600 uppercase tracking-widest">34labs, org</span>
+            </div>
+        </div>
+        
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex items-center gap-3">
+            <a href="#features" class="btn-pop bg-white text-blue-900 px-4 py-2 text-xs">Fitur</a>
+            <a href="#demo" class="btn-pop bg-white text-blue-900 px-4 py-2 text-xs">Demo</a>
+            <a href="#opensource" class="btn-pop bg-white text-blue-900 px-4 py-2 text-xs">Open Source</a>
+            <a href="https://github.com/34labs/SnapEdit/" target="_blank" rel="noopener" class="gh-star-btn btn-pop bg-white text-blue-900 px-4 py-2 text-xs" id="starBtn">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                Star
+            </a>
+            <a href="/app" class="btn-pop btn-primary px-5 py-2.5 text-sm">
+                Buka Aplikasi
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </a>
+        </div>
+
+        <!-- Mobile Hamburger -->
+        <button class="md:hidden w-12 h-12 bg-white border-3 border-blue-900 rounded-xl shadow-[4px_4px_0_#1e40af] flex items-center justify-center" id="menuToggle" aria-label="Toggle menu">
+            <svg class="w-6 h-6 text-blue-900 menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <svg class="w-6 h-6 text-blue-900 close-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Mobile Nav -->
+    <div class="mobile-nav md:hidden bg-white border-b-3 border-blue-900 px-6" id="mobileNav">
+        <div class="py-4 flex flex-col gap-3">
+            <a href="#features" class="btn-pop bg-blue-100 text-blue-900 px-4 py-3 text-sm mobile-link">Fitur</a>
+            <a href="#demo" class="btn-pop bg-blue-100 text-blue-900 px-4 py-3 text-sm mobile-link">Demo</a>
+            <a href="#opensource" class="btn-pop bg-blue-100 text-blue-900 px-4 py-3 text-sm mobile-link">Open Source</a>
+            <a href="/app" class="btn-pop btn-primary px-4 py-3 text-sm mobile-link">Buka Aplikasi</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="flex-1 flex items-center relative overflow-hidden">
+        <!-- Animated Floating Shapes -->
+        <div class="shape-float shape-float-1 w-40 h-40 bg-yellow-300 rounded-full" style="top: 5%; left: 5%;"></div>
+        <div class="shape-float shape-float-2 w-24 h-24 bg-pink-300 rounded-full" style="top: 60%; right: 8%;"></div>
+        <div class="shape-float shape-float-3 w-16 h-16 bg-green-300 rounded-full" style="top: 30%; right: 25%;"></div>
+        <div class="shape-float shape-float-4 w-28 h-28 bg-blue-300 rounded-full" style="bottom: 15%; left: 15%;"></div>
+        <div class="shape-float shape-float-5 w-20 h-20 bg-yellow-200 rounded-full" style="top: 15%; right: 45%;"></div>
+
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Left: Content -->
+                <div class="max-w-xl">
+                    <div class="inline-flex items-center gap-2 bg-green-100 border-2 border-green-700 text-green-800 px-4 py-1.5 rounded-full font-bold text-xs mb-6 reveal">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        100% Offline & Privat
+                    </div>
+
+                    <h2 class="font-display text-4xl md:text-6xl font-bold leading-tight mb-6 text-blue-950 reveal reveal-delay-1">
+                        Edit Gambar<br>
+                        <span class="text-gradient" id="typingTarget"></span><span class="typing-cursor"></span>
+                    </h2>
+
+                    <p class="text-lg text-blue-800 mb-8 leading-relaxed reveal reveal-delay-2">
+                        Tools export gambar yang <strong>benar-benar berjalan di browser</strong>. 
+                        Tidak ada upload ke server. Zoom presisi, crop akurat, dan export instan.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 reveal reveal-delay-3">
+                        <a href="/app" class="btn-pop btn-yellow px-8 py-4 text-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Mulai Sekarang
+                        </a>
+                        <a href="https://github.com/34labs/SnapEdit/" target="_blank" rel="noopener" class="btn-pop bg-white text-blue-900 px-6 py-4 text-lg">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                    </div>
+
+                    <!-- Trust Indicators -->
+                    <div class="mt-10 pt-8 border-t-2 border-blue-200 flex flex-wrap items-center gap-6 reveal reveal-delay-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center border-2 border-blue-300">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm text-blue-900">Proses Instan</div>
+                                <div class="text-xs text-blue-600">Tanpa loading server</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center border-2 border-pink-300">
+                                <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm text-blue-900">Gratis Selamanya</div>
+                                <div class="text-xs text-blue-600">Tanpa biaya tersembunyi</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center border-2 border-yellow-300">
+                                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm text-blue-900">Open Source</div>
+                                <div class="text-xs text-blue-600">MIT License</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Graphic -->
+                <div class="relative hidden lg:flex justify-center items-center reveal reveal-delay-2">
+                    <div class="hero-graphic relative">
+                        <!-- Pulse rings -->
+                        <div class="pulse-ring w-80 h-80" style="top: 50%; left: 50%; margin-top: -160px; margin-left: -160px;"></div>
+                        <div class="pulse-ring w-80 h-80" style="top: 50%; left: 50%; margin-top: -160px; margin-left: -160px; animation-delay: 1s;"></div>
+                        <div class="pulse-ring w-80 h-80" style="top: 50%; left: 50%; margin-top: -160px; margin-left: -160px; animation-delay: 2s;"></div>
+
+                        <!-- Main Card Mock -->
+                        <div class="w-96 h-80 bg-white rounded-3xl border-4 border-blue-900 shadow-[8px_8px_0_#1e40af] p-4 relative overflow-hidden">
+                            <div class="bg-blue-900 rounded-t-2xl h-8 flex items-center px-3 gap-2 mb-3">
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                            </div>
+                            <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl border-3 border-blue-300 flex items-center justify-center relative overflow-hidden">
+                                <div class="absolute inset-0 opacity-30" style="background-image: linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;"></div>
+                                <div class="relative z-10 w-32 h-32 bg-gradient-to-br from-yellow-300 to-pink-400 rounded-xl border-4 border-white shadow-lg flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-white opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute inset-8 border-4 border-yellow-400 rounded-lg pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.3)]"></div>
+                            </div>
+                            <div class="flex gap-2 mt-3 justify-center">
+                                <div class="w-8 h-8 bg-blue-500 rounded-lg border-2 border-blue-900"></div>
+                                <div class="w-8 h-8 bg-yellow-400 rounded-lg border-2 border-blue-900"></div>
+                                <div class="w-8 h-8 bg-white rounded-lg border-2 border-blue-900"></div>
+                                <div class="w-8 h-8 bg-white rounded-lg border-2 border-blue-900"></div>
+                            </div>
+                        </div>
+
+                        <div class="absolute -top-4 -right-4 bg-yellow-300 border-3 border-blue-900 rounded-xl px-4 py-2 shadow-[4px_4px_0_#1e40af] font-bold text-sm transform rotate-6">
+                            Zoom & Crop!
+                        </div>
+                        
+                        <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-green-400 border-3 border-blue-900 rounded-2xl shadow-[4px_4px_0_#1e40af] flex items-center justify-center transform -rotate-12">
+                            <svg class="w-8 h-8 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                        </div>
+
+                        <!-- OSS Badge -->
+                        <div class="absolute -top-3 -left-8 bg-white border-3 border-blue-900 rounded-xl px-3 py-1.5 shadow-[4px_4px_0_#1e40af] font-bold text-xs transform -rotate-6 flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            Open Source
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 scroll-indicator hidden md:block">
+            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="py-8 bg-white border-t-4 border-b-4 border-blue-100">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="reveal">
+                    <div class="stat-value font-display text-3xl md:text-4xl font-bold text-blue-900" data-target="100" data-suffix="%">0%</div>
+                    <div class="text-sm text-blue-600 mt-1">Client-Side</div>
+                </div>
+                <div class="reveal reveal-delay-1">
+                    <div class="stat-value font-display text-3xl md:text-4xl font-bold text-blue-900" data-target="0" data-suffix=" KB" data-static="0 KB">0 KB</div>
+                    <div class="text-sm text-blue-600 mt-1">Data Dikirim</div>
+                </div>
+                <div class="reveal reveal-delay-2">
+                    <div class="stat-value font-display text-3xl md:text-4xl font-bold text-blue-900" data-target="5" data-suffix="+">0+</div>
+                    <div class="text-sm text-blue-600 mt-1">Format Export</div>
+                </div>
+                <div class="reveal reveal-delay-3">
+                    <div class="stat-value font-display text-3xl md:text-4xl font-bold text-blue-900" data-target="3" data-suffix="">0</div>
+                    <div class="text-sm text-blue-600 mt-1">Langkah Export</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white/50 border-t-4 border-blue-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+                    Kenapa Pilih SnapEdit?
+                </h2>
+                <p class="text-blue-600 max-w-2xl mx-auto">
+                    Klik kartu untuk melihat detail lebih lanjut. Setiap fitur dirancang untuk kecepatan dan kemudahan.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="card-pop p-6 feature-card reveal reveal-delay-1" onclick="toggleFeature(this)">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="feature-icon w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center text-white shrink-0">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="feature-card-inner">
+                        <h3 class="font-display text-xl font-bold text-blue-900 mb-2">100% Privat</h3>
+                        <p class="text-blue-600 text-sm leading-relaxed">
+                            Gambar tidak pernah dikirim ke server mana pun. Semua proses terjadi langsung di browser Anda.
+                        </p>
+                        <div class="feature-extra mt-3 pt-3 border-t-2 border-blue-100">
+                            <ul class="text-xs text-blue-600 space-y-1">
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Buka DevTools untuk membuktikannya</li>
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Tidak ada analytics tracker</li>
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Cocok untuk gambar sensitif</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-pop p-6 feature-card reveal reveal-delay-2" onclick="toggleFeature(this)">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="feature-icon w-14 h-14 bg-yellow-400 rounded-xl flex items-center justify-center text-blue-900 shrink-0">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                            </svg>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="feature-card-inner">
+                        <h3 class="font-display text-xl font-bold text-blue-900 mb-2">Zoom-to-Edit</h3>
+                        <p class="text-blue-600 text-sm leading-relaxed">
+                            Zoom bukan cuma untuk melihat. Gunakan zoom dan pan untuk mengatur komposisi gambar dengan presisi pixel-perfect.
+                        </p>
+                        <div class="feature-extra mt-3 pt-3 border-t-2 border-blue-100">
+                            <ul class="text-xs text-blue-600 space-y-1">
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Scroll wheel untuk zoom</li>
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Drag untuk pan/geser</li>
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Hingga 800% zoom level</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-pop p-6 feature-card reveal reveal-delay-3" onclick="toggleFeature(this)">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="feature-icon w-14 h-14 bg-pink-400 rounded-xl flex items-center justify-center text-white shrink-0">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                            </svg>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="feature-card-inner">
+                        <h3 class="font-display text-xl font-bold text-blue-900 mb-2">Preset Template</h3>
+                        <p class="text-blue-600 text-sm leading-relaxed">
+                            Siapkan ukuran untuk Instagram, YouTube, TikTok, atau Open Graph dengan satu klik.
+                        </p>
+                        <div class="feature-extra mt-3 pt-3 border-t-2 border-blue-100">
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="text-[10px] font-bold bg-pink-100 text-pink-800 px-2 py-0.5 rounded-full border border-pink-300">1:1 Instagram</span>
+                                <span class="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded-full border border-red-300">4:5 IG Portrait</span>
+                                <span class="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full border border-blue-300">16:9 YouTube</span>
+                                <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full border border-purple-300">9:16 TikTok</span>
+                                <span class="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-0.5 rounded-full border border-green-300">OG Image</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-pop p-6 feature-card reveal reveal-delay-1" onclick="toggleFeature(this)">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="feature-icon w-14 h-14 bg-green-400 rounded-xl flex items-center justify-center text-blue-900 shrink-0">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                            </svg>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="feature-card-inner">
+                        <h3 class="font-display text-xl font-bold text-blue-900 mb-2">Alignment Tools</h3>
+                        <p class="text-blue-600 text-sm leading-relaxed">
+                            Posisikan gambar secara instan: tengah, pojok, atau mana saja. Grid 3x3 memudahkan komposisi visual.
+                        </p>
+                        <div class="feature-extra mt-3 pt-3 border-t-2 border-blue-100">
+                            <ul class="text-xs text-blue-600 space-y-1">
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> 9 titik alignment snap</li>
+                                <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Grid rule of thirds</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-pop p-6 feature-card reveal reveal-delay-2" onclick="toggleFeature(this)">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="feature-icon w-14 h-14 bg-purple-400 rounded-xl flex items-center justify-center text-white shrink-0">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                            </svg>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="feature-card-inner">
+                        <h3 class="font-display text-xl font-bold text-blue-900 mb-2">Background Custom</h3>
+                        <p class="text-blue-600 text-sm leading-relaxed">
+                            Isi area kosong dengan warna solid atau biarkan transparan. Sempurna untuk thumbnail atau banner.
+                        </p>
+                        <div class="feature-extra mt-3 pt-3 border-t-2 border-blue-100">
+                            <div class="flex gap-2 items-center">
+                                <div class="w-6 h-6 rounded bg-white border-2 border-gray-300"></div>
+                                <div class="w-6 h-6 rounded bg-blue-500 border-2 border-blue-700"></div>
+                                <div class="w-6 h-6 rounded bg-red-500 border-2 border-red-700"></div>
+                                <div class="w-6 h-6 rounded bg-black border-2 border-gray-700"></div>
+                                <span class="text-[10px] text-blue-500">+ color picker</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-pop p-6 feature-card reveal reveal-delay-3" onclick="toggleFeature(this)">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="feature-icon w-14 h-14 bg-orange-400 rounded-xl flex items-center justify-center text-white shrink-0">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="feature-card-inner">
+                        <h3 class="font-display text-xl font-bold text-blue-900 mb-2">Multi-Format</h3>
+                        <p class="text-blue-600 text-sm leading-relaxed">
+                            Export ke PNG, JPEG, atau WebP. Atur kualitas kompresi sesuai kebutuhan.
+                        </p>
+                        <div class="feature-extra mt-3 pt-3 border-t-2 border-blue-100">
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full border border-blue-300">.png lossless</span>
+                                <span class="text-[10px] font-bold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full border border-yellow-300">.jpg compact</span>
+                                <span class="text-[10px] font-bold bg-green-100 text-green-800 px-2 py-0.5 rounded-full border border-green-300">.webp modern</span>
+                                <span class="text-[10px] font-bold bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full border border-orange-300">.bmp raw</span>
+                                <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full border border-purple-300">.ico favicon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section id="demo" class="py-20 border-t-4 border-blue-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12 reveal">
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+                    Coba Langsung di Sini
+                </h2>
+                <p class="text-blue-600 max-w-xl mx-auto">
+                    Ini bukan screenshot. Drag untuk geser, scroll untuk zoom. Rasakan sendiri interaksinya.
+                </p>
+            </div>
+
+            <div class="max-w-3xl mx-auto reveal reveal-delay-1">
+                <div class="card-pop p-6">
+                    <!-- Demo Toolbar -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-blue-600">Zoom:</span>
+                            <input type="range" min="50" max="300" value="100" class="zoom-slider w-32" id="zoomSlider">
+                            <span class="text-xs font-bold text-blue-900 w-12" id="zoomLabel">100%</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn-pop bg-blue-100 text-blue-900 px-3 py-1.5 text-xs demo-align-btn" data-align="center" title="Center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M12 5v14"/></svg>
+                            </button>
+                            <button class="btn-pop bg-blue-100 text-blue-900 px-3 py-1.5 text-xs demo-align-btn" data-align="top-left" title="Top Left">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 7h10M7 7v10"/></svg>
+                            </button>
+                            <button class="btn-pop bg-blue-100 text-blue-900 px-3 py-1.5 text-xs demo-align-btn" data-align="bottom-right" title="Bottom Right">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17H7M17 17V7"/></svg>
+                            </button>
+                            <button class="btn-pop bg-yellow-300 text-blue-900 px-3 py-1.5 text-xs" id="resetDemoBtn" title="Reset">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Demo Canvas -->
+                    <div class="demo-canvas-wrap checker-bg" id="demoCanvas" style="height: 320px; position: relative;">
+                        <div id="demoImage" style="position: absolute; width: 200px; height: 150px; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: none; will-change: transform;">
+                            <img src="https://avatars.githubusercontent.com/u/266049854?s=200&v=4" alt="Demo gambar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 3px solid white; box-shadow: 4px 4px 0 rgba(30,64,175,0.3);" draggable="false">
+                        </div>
+                        <!-- Grid overlay -->
+                        <div id="gridOverlay" style="position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;">
+                            <div style="position: absolute; left: 33.33%; top: 0; bottom: 0; width: 1px; background: rgba(250,204,21,0.5);"></div>
+                            <div style="position: absolute; left: 66.66%; top: 0; bottom: 0; width: 1px; background: rgba(250,204,21,0.5);"></div>
+                            <div style="position: absolute; top: 33.33%; left: 0; right: 0; height: 1px; background: rgba(250,204,21,0.5);"></div>
+                            <div style="position: absolute; top: 66.66%; left: 0; right: 0; height: 1px; background: rgba(250,204,21,0.5);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Demo info -->
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="flex items-center gap-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="gridToggle" class="w-4 h-4 accent-blue-600">
+                                <span class="text-xs font-bold text-blue-600">Tampilkan Grid</span>
+                            </label>
+                        </div>
+                        <div class="text-xs text-blue-400">
+                            Ini hanya preview. <a href="/app" class="text-blue-600 font-bold underline">Buka app untuk export.</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Source Section -->
+    <section id="opensource" class="py-20 bg-white/50 border-t-4 border-blue-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12 reveal">
+                <div class="inline-flex items-center gap-2 bg-blue-100 border-2 border-blue-400 text-blue-800 px-4 py-1.5 rounded-full font-bold text-xs mb-4">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    Open Source di GitHub
+                </div>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+                    Kode Terbuka, Sepenuhnya
+                </h2>
+                <p class="text-blue-600 max-w-2xl mx-auto">
+                    SnapEdit dibangun terbuka. Baca kodenya, pelajari cara kerjanya, atau kontribusi langsung.
+                </p>
+            </div>
+
+            <!-- Tab System -->
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-wrap gap-2 mb-6 justify-center reveal">
+                    <button class="tab-btn btn-pop bg-white text-blue-900 px-5 py-2.5 text-sm active" data-tab="install">Instalasi</button>
+                    <button class="tab-btn btn-pop bg-white text-blue-900 px-5 py-2.5 text-sm" data-tab="structure">Struktur</button>
+                    <button class="tab-btn btn-pop bg-white text-blue-900 px-5 py-2.5 text-sm" data-tab="contribute">Kontribusi</button>
+                </div>
+
+                <!-- Tab: Install -->
+                <div class="tab-content active reveal reveal-delay-1" id="tab-install">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="dot bg-red-400"></div>
+                            <div class="dot bg-yellow-400"></div>
+                            <div class="dot bg-green-400"></div>
+                            <span class="text-xs text-gray-400 ml-2">Terminal</span>
+                            <button class="copy-btn ml-auto bg-slate-600 hover:bg-slate-500 text-white text-xs px-3 py-1 rounded-lg border-2 border-slate-500 font-bold" onclick="copyCode(this, 'git clone https://github.com/34labs/SnapEdit.git\ncd SnapEdit\nnpm install\nnpm run dev')">
+                                Salin
+                            </button>
+                        </div>
+                        <div class="py-3">
+                            <div class="code-line"><span class="code-comment"># Clone repositori</span></div>
+                            <div class="code-line"><span class="code-func">git</span> clone https://github.com/34labs/SnapEdit.git</div>
+                            <div class="code-line"><span class="code-func">cd</span> SnapEdit</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-comment"># Install dependencies</span></div>
+                            <div class="code-line"><span class="code-func">npm</span> install</div>
+                            <div class="code-line"></div>
+                            <div class="code-line"><span class="code-comment"># Jalankan development server</span></div>
+                            <div class="code-line"><span class="code-func">npm</span> run dev</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Structure -->
+                <div class="tab-content reveal reveal-delay-1" id="tab-structure">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="dot bg-red-400"></div>
+                            <div class="dot bg-yellow-400"></div>
+                            <div class="dot bg-green-400"></div>
+                            <span class="text-xs text-gray-400 ml-2">snapedit/</span>
+                            <button class="copy-btn ml-auto bg-slate-600 hover:bg-slate-500 text-white text-xs px-3 py-1 rounded-lg border-2 border-slate-500 font-bold" onclick="copyCode(this, 'SnapEdit/\n  src/\n    components/    # UI components\n    utils/         # Canvas & export logic\n    stores/        # State management\n  public/\n  index.html\n  package.json\n  README.md')">
+                                Salin
+                            </button>
+                        </div>
+                        <div class="py-3">
+                            <div class="code-line">  <span class="code-string">README.md</span></div>
+                            <div class="code-line">  <span class="code-string">LICENCE</span></div>
+                            <div class="code-line">browser/</div>
+                            <div class="code-line">  <span class="code-prop">app/</span></div>
+                            <div class="code-line">  <span class="code-string">index.html</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Contribute -->
+                <div class="tab-content reveal reveal-delay-1" id="tab-contribute">
+                    <div class="card-pop p-8">
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="text-center p-4 bg-blue-50 rounded-2xl border-2 border-blue-200">
+                                <div class="w-12 h-12 bg-blue-500 rounded-xl border-2 border-blue-900 flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </div>
+                                <h4 class="font-display font-bold text-blue-900 mb-1">Fork & Edit</h4>
+                                <p class="text-xs text-blue-600">Fork repo, buat branch, dan mulai coding fitur baru.</p>
+                            </div>
+                            <div class="text-center p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200">
+                                <div class="w-12 h-12 bg-yellow-400 rounded-xl border-2 border-blue-900 flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <h4 class="font-display font-bold text-blue-900 mb-1">Pull Request</h4>
+                                <p class="text-xs text-blue-600">Submit PR dan jelaskan perubahan. Review cepat dari maintainer.</p>
+                            </div>
+                            <div class="text-center p-4 bg-green-50 rounded-2xl border-2 border-green-200">
+                                <div class="w-12 h-12 bg-green-400 rounded-xl border-2 border-blue-900 flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                </div>
+                                <h4 class="font-display font-bold text-blue-900 mb-1">Bergabung</h4>
+                                <p class="text-xs text-blue-600">Jadi contributor dan dapatkan akses ke organisasi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GitHub CTA -->
+                <div class="mt-8 text-center reveal reveal-delay-2">
+                    <a href="https://github.com/34labs/SnapEdit/" target="_blank" rel="noopener" class="gh-star-btn btn-pop btn-primary px-8 py-4 text-lg inline-flex">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        Lihat di GitHub
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tech Stack Marquee -->
+            <div class="mt-16 overflow-hidden reveal">
+                <div class="text-center mb-6">
+                    <span class="text-xs font-bold text-blue-400 uppercase tracking-widest">Dibangun Dengan</span>
+                </div>
+                <div class="relative">
+                    <div class="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white/80 to-transparent z-10"></div>
+                    <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white/80 to-transparent z-10"></div>
+                    <div class="marquee-track">
+                        <span class="bg-blue-100 text-blue-800 border-2 border-blue-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">HTML5 Canvas</span>
+                        <span class="bg-yellow-100 text-yellow-800 border-2 border-yellow-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Vanilla JavaScript</span>
+                        <span class="bg-green-100 text-green-800 border-2 border-green-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">CSS3</span>
+                        <span class="bg-pink-100 text-pink-800 border-2 border-pink-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Tailwind CSS</span>
+                        <span class="bg-purple-100 text-purple-800 border-2 border-purple-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Zero Dependencies</span>
+                        <span class="bg-orange-100 text-orange-800 border-2 border-orange-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">File API</span>
+                        <span class="bg-blue-100 text-blue-800 border-2 border-blue-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Clipboard API</span>
+                        <span class="bg-red-100 text-red-800 border-2 border-red-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">OffscreenCanvas</span>
+                        <!-- Duplicate for seamless loop -->
+                        <span class="bg-blue-100 text-blue-800 border-2 border-blue-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">HTML5 Canvas</span>
+                        <span class="bg-yellow-100 text-yellow-800 border-2 border-yellow-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Vanilla JavaScript</span>
+                        <span class="bg-green-100 text-green-800 border-2 border-green-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">CSS3</span>
+                        <span class="bg-pink-100 text-pink-800 border-2 border-pink-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Tailwind CSS</span>
+                        <span class="bg-purple-100 text-purple-800 border-2 border-purple-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Zero Dependencies</span>
+                        <span class="bg-orange-100 text-orange-800 border-2 border-orange-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">File API</span>
+                        <span class="bg-blue-100 text-blue-800 border-2 border-blue-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">Clipboard API</span>
+                        <span class="bg-red-100 text-red-800 border-2 border-red-300 px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap">OffscreenCanvas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works - Interactive Timeline -->
+    <section class="py-20 border-t-4 border-blue-100">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12 reveal">
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+                    Cara Pakai
+                </h2>
+                <p class="text-blue-600">Klik setiap langkah untuk detail</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-4">
+                <!-- Step 1 -->
+                <div class="timeline-step card-pop p-5 reveal reveal-delay-1" onclick="toggleStep(this)">
+                    <div class="flex items-center gap-4">
+                        <div class="step-circle w-14 h-14 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0 border-4 border-blue-900 shadow-[4px_4px_0_#1e40af] transition-transform">
+                            1
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-lg text-blue-900">Masukkan Gambar</h3>
+                            <p class="text-blue-600 text-sm">Drag & drop, paste, atau klik untuk pilih file</p>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                    <div class="step-detail">
+                        <div class="mt-4 pt-4 border-t-2 border-blue-100 pl-[72px]">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold border border-blue-300 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                                    Drag & Drop
+                                </span>
+                                <span class="text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-bold border border-yellow-300 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                    Ctrl+V Paste
+                                </span>
+                                <span class="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold border border-green-300 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    File Picker
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="timeline-step card-pop p-5 reveal reveal-delay-2" onclick="toggleStep(this)">
+                    <div class="flex items-center gap-4">
+                        <div class="step-circle w-14 h-14 bg-yellow-400 text-blue-900 rounded-full flex items-center justify-center text-xl font-bold shrink-0 border-4 border-blue-900 shadow-[4px_4px_0_#1e40af] transition-transform">
+                            2
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-lg text-blue-900">Atur & Edit</h3>
+                            <p class="text-blue-600 text-sm">Zoom, geser, pilih ukuran, dan sesuaikan komposisi</p>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                    <div class="step-detail">
+                        <div class="mt-4 pt-4 border-t-2 border-blue-100 pl-[72px]">
+                            <p class="text-sm text-blue-600">Gunakan scroll wheel untuk zoom, drag untuk menggeser posisi gambar, dan pilih preset ukuran output dari sidebar. Aktifkan grid rule-of-thirds untuk komposisi yang lebih seimbang.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="timeline-step card-pop p-5 reveal reveal-delay-3" onclick="toggleStep(this)">
+                    <div class="flex items-center gap-4">
+                        <div class="step-circle w-14 h-14 bg-green-400 text-blue-900 rounded-full flex items-center justify-center text-xl font-bold shrink-0 border-4 border-blue-900 shadow-[4px_4px_0_#1e40af] transition-transform">
+                            3
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-lg text-blue-900">Export</h3>
+                            <p class="text-blue-600 text-sm">Pilih format, atur kualitas, dan download langsung</p>
+                        </div>
+                        <svg class="w-5 h-5 text-blue-400 expand-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                    <div class="step-detail">
+                        <div class="mt-4 pt-4 border-t-2 border-blue-100 pl-[72px]">
+                            <p class="text-sm text-blue-600">Pilih antara PNG (lossless), JPEG (kompresi), atau WebP (modern). Atur kualitas kompresi dari 1-100%. Gambar diproses langsung di browser dan langsung ter-download tanpa melewati server.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 34Labs Community Section (Subtle) -->
+    <section class="py-16 bg-blue-900 text-white border-t-4 border-blue-700 relative overflow-hidden">
+        <!-- Subtle background pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-3xl mx-auto text-center reveal">
+                <div class="inline-flex items-center gap-2 bg-blue-800 border-2 border-blue-600 text-blue-200 px-4 py-1.5 rounded-full font-bold text-xs mb-6">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Dikembangkan oleh Komunitas
+                </div>
+                
+                <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+                    Bagian dari 34Labs
+                </h2>
+                <p class="text-blue-200 mb-8 max-w-xl mx-auto leading-relaxed">
+                    SnapEdit dikembangkan di bawah 34Labs, sebuah organisasi komunitas di GitHub tempat developer berkolaborasi, bereksperimen, dan membangun software menarik bersama.
+                </p>
+
+                <!-- Contributor avatars -->
+                <div class="flex justify-center -space-x-3 mb-8">
+                    <div class="contributor-avatar w-12 h-12 rounded-full overflow-hidden flex items-center justify-center z-[6]">
+    <img src="https://avatars.githubusercontent.com/u/132740827?v=4" alt="Contributor" class="w-full h-full object-cover">
+</div>
+                    <a href="https://github.com/34labs/SnapEdit/" target="_blank" rel="noopener" class="contributor-avatar w-12 h-12 rounded-full bg-blue-700 border-3 border-blue-500 flex items-center justify-center text-white font-bold text-xs z-[1] hover:bg-blue-600 transition-colors">
+                        +You?
+                    </a>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="https://github.com/34labs/" target="_blank" rel="noopener" class="btn-pop bg-blue-800 border-blue-500 text-blue-100 px-6 py-3 text-sm hover:bg-blue-700">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        Lihat 34Labs
+                    </a>
+                    <a href="/app" class="btn-pop btn-yellow px-8 py-3 text-sm">
+                        Buka SnapEdit
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 border-t-4 border-blue-100">
+        <div class="container mx-auto px-6 text-center">
+            <div class="card-pop p-10 md:p-16 max-w-2xl mx-auto reveal" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #fef3c7 100%);">
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+                    Siap Mencoba?
+                </h2>
+                <p class="text-blue-600 mb-8 max-w-md mx-auto">
+                    Tidak perlu registrasi. Tidak perlu install. Langsung buka dan pakai. Gratis selamanya.
+                </p>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <a href="/app" class="btn-pop btn-yellow px-10 py-4 text-lg">
+                        Buka SnapEdit
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                    <a href="https://github.com/34labs/SnapEdit/" target="_blank" rel="noopener" class="btn-pop bg-white text-blue-900 px-8 py-4 text-lg">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        Star on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t-4 border-blue-100">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg border-2 border-blue-900 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <span class="font-display font-bold text-blue-900">SnapEdit</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-blue-600">
+                <a href="https://github.com/34labs/SnapEdit/" target="_blank" rel="noopener" class="hover:text-blue-900 transition-colors font-semibold flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <span class="text-blue-300">|</span>
+                <span>MIT License</span>
+                <span class="text-blue-300">|</span>
+                <a href="https://github.com/34labs/" target="_blank" rel="noopener" class="hover:text-blue-900 transition-colors">34Labs</a>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-blue-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                Privasi Anda Terjaga
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === Typing Animation ===
+        const typingPhrases = ['Tanpa Ribet.', 'Open Source.', '100% Gratis.', 'Super Cepat.'];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingTarget = document.getElementById('typingTarget');
+
+        function typeEffect() {
+            const current = typingPhrases[phraseIndex];
+            if (isDeleting) {
+                typingTarget.textContent = current.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingTarget.textContent = current.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let delay = isDeleting ? 60 : 100;
+
+            if (!isDeleting && charIndex === current.length) {
+                delay = 2000; // Jeda sebelum menghapus
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % typingPhrases.length;
+                delay = 400;
+            }
+
+            setTimeout(typeEffect, delay);
+        }
+        typeEffect();
+
+        // === Scroll Reveal (IntersectionObserver) ===
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // === Animated Stat Counters ===
+        const statElements = document.querySelectorAll('.stat-value');
+        let statsCounted = false;
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !statsCounted) {
+                    statsCounted = true;
+                    animateStats();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        statElements.forEach(el => statsObserver.observe(el));
+
+        function animateStats() {
+            statElements.forEach(el => {
+                const target = parseInt(el.dataset.target);
+                const suffix = el.dataset.suffix || '';
+                const isStatic = el.dataset.static;
+                
+                if (isStatic) {
+                    el.textContent = isStatic;
+                    el.classList.add('pulse');
+                    return;
+                }
+
+                let current = 0;
+                const duration = 1500;
+                const step = target / (duration / 16);
+
+                function update() {
+                    current += step;
+                    if (current >= target) {
+                        current = target;
+                        el.textContent = target + suffix;
+                        el.classList.add('pulse');
+                        return;
+                    }
+                    el.textContent = Math.floor(current) + suffix;
+                    requestAnimationFrame(update);
+                }
+                update();
+            });
+        }
+
+        // === Feature Card Expand/Collapse ===
+        function toggleFeature(card) {
+            const wasExpanded = card.classList.contains('expanded');
+            // Tutup semua dulu
+            document.querySelectorAll('.feature-card.expanded').forEach(c => c.classList.remove('expanded'));
+            // Toggle yang diklik
+            if (!wasExpanded) {
+                card.classList.add('expanded');
+            }
+        }
+
+        // === Timeline Step Toggle ===
+        function toggleStep(step) {
+            const wasActive = step.classList.contains('active');
+            document.querySelectorAll('.timeline-step.active').forEach(s => s.classList.remove('active'));
+            if (!wasActive) {
+                step.classList.add('active');
+            }
+        }
+
+        // === Tab System ===
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Deactivate semua
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                // Activate yang diklik
+                btn.classList.add('active');
+                const tabId = 'tab-' + btn.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // === Copy Code ===
+        function copyCode(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add('copied');
+                btn.textContent = 'Tersalin!';
+                showToast('Kode berhasil disalin!');
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.textContent = 'Salin';
+                }, 2000);
+            }).catch(() => {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                btn.classList.add('copied');
+                btn.textContent = 'Tersalin!';
+                showToast('Kode berhasil disalin!');
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.textContent = 'Salin';
+                }, 2000);
+            });
+        }
+
+        // === Toast Notification ===
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toastText.textContent = message;
+            clearTimeout(toastTimeout);
+            toast.classList.add('show');
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // === Star Button Toggle ===
+        const starBtn = document.getElementById('starBtn');
+        let isStarred = false;
+        starBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            isStarred = !isStarred;
+            starBtn.classList.toggle('starred', isStarred);
+            starBtn.querySelector('svg').nextSibling.textContent = isStarred ? ' Starred!' : ' Star';
+            if (isStarred) {
+                window.open('https://github.com/34labs/SnapEdit/', '_blank');
+            }
+        });
+
+        // === Mobile Menu Toggle ===
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileNav = document.getElementById('mobileNav');
+        const menuIcon = menuToggle.querySelector('.menu-icon');
+        const closeIcon = menuToggle.querySelector('.close-icon');
+
+        menuToggle.addEventListener('click', () => {
+            const isOpen = mobileNav.classList.contains('open');
+            mobileNav.classList.toggle('open');
+            menuIcon.classList.toggle('hidden', !isOpen);
+            closeIcon.classList.toggle('hidden', isOpen);
+        });
+
+        // Tutup mobile nav saat link diklik
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileNav.classList.remove('open');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            });
+        });
+
+        // === Interactive Demo Canvas ===
+        const demoCanvas = document.getElementById('demoCanvas');
+        const demoImage = document.getElementById('demoImage');
+        const zoomSlider = document.getElementById('zoomSlider');
+        const zoomLabel = document.getElementById('zoomLabel');
+        const gridToggle = document.getElementById('gridToggle');
+        const gridOverlay = document.getElementById('gridOverlay');
+        const resetDemoBtn = document.getElementById('resetDemoBtn');
+
+        let demoZoom = 1;
+        let demoX = 0;
+        let demoY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragStartImgX = 0;
+        let dragStartImgY = 0;
+
+        function updateDemoTransform() {
+            demoImage.style.transform = `translate(calc(-50% + ${demoX}px), calc(-50% + ${demoY}px)) scale(${demoZoom})`;
+        }
+
+        // Drag handlers
+        demoCanvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            dragStartImgX = demoX;
+            dragStartImgY = demoY;
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            demoX = dragStartImgX + (e.clientX - dragStartX);
+            demoY = dragStartImgY + (e.clientY - dragStartY);
+            updateDemoTransform();
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        // Touch drag
+        demoCanvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                dragStartX = e.touches[0].clientX;
+                dragStartY = e.touches[0].clientY;
+                dragStartImgX = demoX;
+                dragStartImgY = demoY;
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length !== 1) return;
+            demoX = dragStartImgX + (e.touches[0].clientX - dragStartX);
+            demoY = dragStartImgY + (e.touches[0].clientY - dragStartY);
+            updateDemoTransform();
+        });
+
+        window.addEventListener('touchend', () => { isDragging = false; });
+
+        // Scroll zoom pada demo canvas
+        demoCanvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            demoZoom = Math.max(0.5, Math.min(3, demoZoom + delta));
+            zoomSlider.value = Math.round(demoZoom * 100);
+            zoomLabel.textContent = Math.round(demoZoom * 100) + '%';
+            updateDemoTransform();
+        }, { passive: false });
+
+        // Zoom slider
+        zoomSlider.addEventListener('input', () => {
+            demoZoom = parseInt(zoomSlider.value) / 100;
+            zoomLabel.textContent = zoomSlider.value + '%';
+            updateDemoTransform();
+        });
+
+        // Grid toggle
+        gridToggle.addEventListener('change', () => {
+            gridOverlay.style.opacity = gridToggle.checked ? '1' : '0';
+        });
+
+        // Alignment buttons
+        document.querySelectorAll('.demo-align-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const align = btn.dataset.align;
+                const rect = demoCanvas.getBoundingClientRect();
+                const imgW = 200 * demoZoom;
+                const imgH = 150 * demoZoom;
+
+                switch(align) {
+                    case 'center':
+                        demoX = 0; demoY = 0;
+                        break;
+                    case 'top-left':
+                        demoX = -(rect.width / 2 - imgW / 2);
+                        demoY = -(rect.height / 2 - imgH / 2);
+                        break;
+                    case 'bottom-right':
+                        demoX = (rect.width / 2 - imgW / 2);
+                        demoY = (rect.height / 2 - imgH / 2);
+                        break;
+                }
+                // Animasi smooth
+                demoImage.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)';
+                updateDemoTransform();
+                setTimeout(() => { demoImage.style.transition = 'none'; }, 350);
+            });
+        });
+
+        // Reset button
+        resetDemoBtn.addEventListener('click', () => {
+            demoZoom = 1;
+            demoX = 0;
+            demoY = 0;
+            zoomSlider.value = 100;
+            zoomLabel.textContent = '100%';
+            demoImage.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+            updateDemoTransform();
+            setTimeout(() => { demoImage.style.transition = 'none'; }, 450);
+            showToast('Demo direset!');
+        });
+    </script>
+
+</body>
+</html>
