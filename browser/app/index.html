@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapEdit - Image Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pop-blue: #2563eb;
+            --pop-blue-light: #60a5fa;
+            --pop-blue-dark: #1e40af;
+            --pop-yellow: #facc15;
+            --pop-pink: #f472b6;
+            --pop-green: #4ade80;
+            --bg-main: #f0f7ff;
+            --bg-card: #ffffff;
+            --text-main: #1e3a8a;
+            --text-muted: #3b82f6;
+            --shadow-pop: 5px 5px 0px #1e40af;
+            --shadow-pop-sm: 3px 3px 0px #1e40af;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* BGPattern */
+        .bg-fun {
+            background-color: #dbeafe;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(250, 204, 21, 0.1) 0%, transparent 40%);
+        }
+
+        .card-pop {
+            background: var(--bg-card);
+            border: 3px solid var(--pop-blue-dark);
+            border-radius: 16px;
+            box-shadow: var(--shadow-pop);
+        }
+
+        .btn-pop {
+            font-family: 'Fredoka', sans-serif;
+            border: 2px solid var(--pop-blue-dark);
+            border-radius: 8px;
+            box-shadow: var(--shadow-pop-sm);
+            transition: all 0.1s ease;
+            font-weight: 600;
+            background: white;
+            color: var(--pop-blue-dark);
+        }
+
+        .btn-pop:active { transform: translate(2px, 2px); box-shadow: none; }
+        .btn-pop:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-primary { background: var(--pop-blue); color: white; }
+        .btn-primary:hover { background: var(--pop-blue-light); }
+
+        .btn-yellow { background: var(--pop-yellow); color: var(--pop-blue-dark); }
+        .btn-yellow:hover { background: #fde047; }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: #bfdbfe;
+            border-radius: 4px;
+            border: 2px solid var(--pop-blue-dark);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--pop-yellow);
+            border: 2px solid var(--pop-blue-dark);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 2px 2px 0 var(--pop-blue-dark);
+        }
+
+        .drop-zone {
+            border: 4px dashed var(--pop-blue);
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .drop-zone.drag-over {
+            background: rgba(37, 99, 235, 0.15);
+            border-color: var(--pop-yellow);
+            transform: scale(1.01);
+        }
+
+        .workspace-area {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #1e293b; 
+            border-radius: 8px;
+        }
+
+        .viewport-frame {
+            position: relative;
+            border: 3px solid var(--pop-yellow);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.65);
+            transition: width 0.2s ease, height 0.2s ease;
+            cursor: grab;
+        }
+        .viewport-frame:active { cursor: grabbing; }
+
+        .checker-bg {
+            background-image: 
+                linear-gradient(45deg, #334155 25%, transparent 25%), 
+                linear-gradient(-45deg, #334155 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #334155 75%), 
+                linear-gradient(-45deg, transparent 75%, #334155 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #1e293b;
+        }
+
+        .control-section {
+            border-bottom: 2px solid #bfdbfe;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+        .control-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+        .input-pop {
+            border: 2px solid var(--pop-blue-dark);
+            border-radius: 6px;
+            background: white;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            color: var(--pop-blue-dark);
+            font-size: 13px;
+        }
+        .input-pop:focus {
+            outline: none;
+            border-color: var(--pop-yellow);
+            box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.4);
+        }
+
+        /* Alignment Grid */
+        .align-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            width: 100%;
+        }
+        .align-btn {
+            aspect-ratio: 1;
+            border: 2px solid var(--pop-blue-dark);
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            padding: 0;
+        }
+        .align-btn:hover { background: #eff6ff; }
+        .align-btn.active { background: var(--pop-yellow); box-shadow: 1px 1px 0 var(--pop-blue-dark); }
+        .align-btn svg { width: 14px; height: 14px; stroke-width: 3; color: var(--pop-blue-dark); }
+
+        /* Scrollbar Sidebar */
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: #eff6ff; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 2px; }
+        
+        .size-badge {
+            background: var(--pop-yellow);
+            border: 2px solid var(--pop-blue-dark);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-weight: 700;
+            font-size: 11px;
+            color: var(--pop-blue-dark);
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Tooltip fix */
+        [data-tip] { position: relative; }
+        [data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 5px;
+            padding: 4px 8px;
+            background: var(--pop-blue-dark);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 50;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-fun">
+
+    <!-- Header -->
+    <header class="px-6 py-3 flex items-center justify-between border-b-4 border-blue-900/10 flex-shrink-0 bg-white/50 backdrop-blur-sm z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg border-2 border-blue-900 flex items-center justify-center shadow-[3px_3px_0_#1e40af]">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-display text-xl font-bold text-blue-900 tracking-tight leading-none">SnapEdit Pro</h1>
+                <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Offline Image Tools</p>
+            </div>
+        </div>
+        
+        <!-- Status Badges -->
+        <div class="flex items-center gap-3">
+            <div id="statusSize" class="hidden size-badge">1080 x 1080</div>
+            <div class="hidden md:flex items-center gap-1.5 bg-green-100 border-2 border-green-700 text-green-800 px-3 py-1 rounded-full font-bold text-xs">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                Secure & Local
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside class="w-72 bg-white/80 backdrop-blur-sm border-r-4 border-blue-900/10 flex flex-col overflow-hidden flex-shrink-0">
+            <div class="flex-1 overflow-y-auto sidebar-scroll p-4 space-y-4">
+                
+                <!-- Section: Output Size -->
+                <div class="control-section">
+                    <h3 class="font-display font-bold text-xs text-blue-900/70 mb-2 uppercase tracking-wider">Ukuran Output</h3>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <div class="relative">
+                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-400">W</span>
+                            <input type="number" id="widthInput" value="1080" class="input-pop w-full pl-6 pr-2 py-1.5 text-center">
+                        </div>
+                        <div class="relative">
+                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-400">H</span>
+                            <input type="number" id="heightInput" value="1080" class="input-pop w-full pl-6 pr-2 py-1.5 text-center">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <input type="checkbox" id="lockRatio" checked class="w-4 h-4 rounded border-2 border-blue-900 accent-yellow-400">
+                        <label for="lockRatio" class="text-xs font-bold text-blue-700">Rasio Kunci</label>
+                    </div>
+                    <!-- Presets -->
+                    <div class="grid grid-cols-4 gap-1">
+                        <button class="preset-btn btn-pop px-1 py-1 text-[9px]" data-w="1080" data-h="1080">1:1</button>
+                        <button class="preset-btn btn-pop px-1 py-1 text-[9px]" data-w="1080" data-h="1920">9:16</button>
+                        <button class="preset-btn btn-pop px-1 py-1 text-[9px]" data-w="1920" data-h="1080">16:9</button>
+                        <button class="preset-btn btn-pop px-1 py-1 text-[9px]" data-w="1200" data-h="630">OG</button>
+                    </div>
+                </div>
+
+                <!-- Section: Alignment -->
+                <div class="control-section">
+                    <h3 class="font-display font-bold text-xs text-blue-900/70 mb-2 uppercase tracking-wider">Posisi & Align</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <!-- Alignment Grid -->
+                        <div class="align-grid">
+                            <button class="align-btn" data-align="tl" data-tip="Kiri Atas"><svg viewBox="0 0 10 10"><rect x="1" y="1" width="3" height="3" fill="currentColor"/></svg></button>
+                            <button class="align-btn" data-align="tc" data-tip="Tengah Atas"><svg viewBox="0 0 10 10"><rect x="3.5" y="1" width="3" height="3" fill="currentColor"/></svg></button>
+                            <button class="align-btn" data-align="tr" data-tip="Kanan Atas"><svg viewBox="0 0 10 10"><rect x="6" y="1" width="3" height="3" fill="currentColor"/></svg></button>
+                            
+                            <button class="align-btn" data-align="ml" data-tip="Kiri Tengah"><svg viewBox="0 0 10 10"><rect x="1" y="3.5" width="3" height="3" fill="currentColor"/></svg></button>
+                            <button class="align-btn active" data-align="mc" data-tip="Tengah"><svg viewBox="0 0 10 10"><rect x="3.5" y="3.5" width="3" height="3" fill="currentColor"/></svg></button>
+                            <button class="align-btn" data-align="mr" data-tip="Kanan Tengah"><svg viewBox="0 0 10 10"><rect x="6" y="3.5" width="3" height="3" fill="currentColor"/></svg></button>
+                            
+                            <button class="align-btn" data-align="bl" data-tip="Kiri Bawah"><svg viewBox="0 0 10 10"><rect x="1" y="6" width="3" height="3" fill="currentColor"/></svg></button>
+                            <button class="align-btn" data-align="bc" data-tip="Tengah Bawah"><svg viewBox="0 0 10 10"><rect x="3.5" y="6" width="3" height="3" fill="currentColor"/></svg></button>
+                            <button class="align-btn" data-align="br" data-tip="Kanan Bawah"><svg viewBox="0 0 10 10"><rect x="6" y="6" width="3" height="3" fill="currentColor"/></svg></button>
+                        </div>
+                        
+                        <!-- Transform Buttons -->
+                        <div class="col-span-1 flex flex-col gap-1">
+                             <button id="flipH" class="btn-pop text-xs py-1.5" data-tip="Flip Horizontal">H-Flip</button>
+                             <button id="flipV" class="btn-pop text-xs py-1.5" data-tip="Flip Vertikal">V-Flip</button>
+                             <button id="resetTransform" class="btn-pop text-xs py-1.5" data-tip="Reset">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Settings -->
+                <div class="control-section">
+                    <h3 class="font-display font-bold text-xs text-blue-900/70 mb-2 uppercase tracking-wider">Pengaturan</h3>
+                    <div class="space-y-2">
+                        <select id="formatSelect" class="input-pop w-full px-2 py-1.5 text-sm rounded-md">
+                            <option value="png">PNG (Transparan)</option>
+                            <option value="jpeg">JPEG (Kompak)</option>
+                            <option value="webp">WebP (Modern)</option>
+                        </select>
+
+                        <div id="qualityWrap" class="hidden">
+                            <label class="text-xs font-bold text-blue-700 mb-1 flex justify-between">
+                                <span>Kualitas</span>
+                                <span id="qualityVal" class="text-yellow-600">92%</span>
+                            </label>
+                            <input type="range" id="qualitySlider" min="10" max="100" value="92" class="w-full">
+                        </div>
+
+                        <div class="flex items-center gap-2 pt-1">
+                            <input type="checkbox" id="customBgCheck" class="w-4 h-4 rounded border-2 border-blue-900 accent-yellow-400">
+                            <label for="customBgCheck" class="text-xs font-bold text-blue-700 flex-1">Background</label>
+                            <input type="color" id="bgColorPicker" value="#ffffff" class="w-6 h-6 rounded border-2 border-blue-900 cursor-pointer ml-auto">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="bg-blue-900 text-white rounded-lg p-3 border-2 border-blue-950 text-[11px] font-mono">
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                        <div class="text-blue-300">Asli:</div>
+                        <div class="font-bold" id="infoOriginal">-</div>
+                        <div class="text-blue-300">Output:</div>
+                        <div class="font-bold text-yellow-300" id="infoOutput">-</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar Actions -->
+            <div class="p-4 border-t-2 border-blue-900/10 space-y-2 bg-white">
+                <button id="exportBtn" disabled class="btn-pop btn-yellow w-full py-3 text-sm flex items-center justify-center gap-2 disabled:opacity-50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    EXPORT GAMBAR
+                </button>
+                <button id="clearBtn" class="btn-pop w-full py-2 text-xs flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Hapus Gambar
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Canvas Area -->
+        <div class="flex-1 flex flex-col bg-blue-900/5 relative">
+            
+            <!-- Drop Zone / Workspace -->
+            <div id="viewportContainer" class="flex-1 relative overflow-hidden flex items-center justify-center p-4">
+                
+                <!-- Empty State -->
+                <div id="emptyState" class="drop-zone absolute inset-8 rounded-2xl flex flex-col items-center justify-center cursor-pointer z-10">
+                    <div class="w-20 h-20 bg-blue-200 rounded-full flex items-center justify-center mb-4 border-4 border-blue-400 shadow-[4px_4px_0_#93c5fd]">
+                        <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-blue-800 mb-1">Taruh Gambar Di Sini</h3>
+                    <p class="text-blue-600 text-sm text-center mb-4">Drag & Drop, Paste, atau Klik Tombol</p>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <button id="browseBtn" class="btn-pop btn-primary px-6 py-2 text-sm">Pilih File</button>
+                </div>
+
+                <!-- Workspace -->
+                <div id="workspace" class="absolute inset-4 hidden">
+                    <div class="workspace-area w-full h-full checker-bg" id="workspaceArea">
+                        <div id="viewportFrame" class="viewport-frame">
+                            <canvas id="previewCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Zoom Control Footer -->
+            <div id="zoomBar" class="hidden bg-white/90 backdrop-blur-sm border-t-2 border-blue-900/10 p-3 flex items-center gap-4 z-10">
+                <span class="font-display font-bold text-xs text-blue-900 w-16">ZOOM</span>
+                <button id="zoomOutBtn" class="btn-pop w-8 h-8 text-lg font-bold p-0 flex items-center justify-center">-</button>
+                <input type="range" id="zoomSlider" min="10" max="500" value="100" class="flex-1 max-w-md">
+                <button id="zoomInBtn" class="btn-pop w-8 h-8 text-lg font-bold p-0 flex items-center justify-center">+</button>
+                <div class="size-badge w-16 text-center" id="zoomLabel">100%</div>
+                <button id="fitBtn" class="btn-pop px-3 py-1 text-xs font-bold ml-auto">Fit</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // === STATE ===
+        let img = null;
+        let imgRatio = 1;
+        let scale = 1; // 1 = Fit inside frame
+        let panX = 0;
+        let panY = 0;
+        let flipH = false;
+        let flipV = false;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let startPanX = 0;
+        let startPanY = 0;
+        let lastOutputRatio = 1;
+
+        // === ELEMENTS ===
+        const $ = (id) => document.getElementById(id);
+        const viewportContainer = $('viewportContainer');
+        const workspaceArea = $('workspaceArea');
+        const viewportFrame = $('viewportFrame');
+        const previewCanvas = $('previewCanvas');
+        const ctx = previewCanvas.getContext('2d');
+        const emptyState = $('emptyState');
+        const workspace = $('workspace');
+        const zoomBar = $('zoomBar');
+        const zoomSlider = $('zoomSlider');
+        const zoomLabel = $('zoomLabel');
+        const widthInput = $('widthInput');
+        const heightInput = $('heightInput');
+        const lockRatio = $('lockRatio');
+        const formatSelect = $('formatSelect');
+        const qualitySlider = $('qualitySlider');
+        const qualityVal = $('qualityVal');
+        const qualityWrap = $('qualityWrap');
+        const customBgCheck = $('customBgCheck');
+        const bgColorPicker = $('bgColorPicker');
+        const exportBtn = $('exportBtn');
+        const clearBtn = $('clearBtn');
+        const fileInput = $('fileInput');
+        const browseBtn = $('browseBtn');
+        const statusSize = $('statusSize');
+
+        // === UTILS ===
+        function showToast(msg) {
+            // Simple toast implementation via alert for simplicity in this environment
+            // In production, use a nice div overlay.
+            console.log(msg);
+        }
+
+        function clamp(val, min, max) {
+            return Math.max(min, Math.min(max, val));
+        }
+
+        // === FRAME MANAGEMENT ===
+        function updateFrameSize() {
+            const containerRect = workspaceArea.getBoundingClientRect();
+            const containerW = containerRect.width - 40; 
+            const containerH = containerRect.height - 40;
+            
+            const outW = parseInt(widthInput.value) || 1;
+            const outH = parseInt(heightInput.value) || 1;
+            const outRatio = outW / outH;
+
+            let frameW, frameH;
+
+            if (outRatio > containerW / containerH) {
+                frameW = containerW;
+                frameH = containerW / outRatio;
+            } else {
+                frameH = containerH;
+                frameW = containerH * outRatio;
+            }
+
+            viewportFrame.style.width = `${frameW}px`;
+            viewportFrame.style.height = `${frameH}px`;
+            
+            // Update status bar
+            statusSize.textContent = `${outW} x ${outH}`;
+            $('infoOutput').textContent = `${outW} x ${outH}`;
+            
+            render();
+        }
+
+        // === IMAGE LOADING ===
+        function loadImage(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img = new Image();
+                img.onload = () => {
+                    imgRatio = img.width / img.height;
+                    
+                    widthInput.value = img.width;
+                    heightInput.value = img.height;
+                    $('infoOriginal').textContent = `${img.width} x ${img.height}`;
+                    lastOutputRatio = imgRatio;
+
+                    emptyState.classList.add('hidden');
+                    workspace.classList.remove('hidden');
+                    zoomBar.classList.remove('hidden');
+                    statusSize.classList.remove('hidden');
+                    exportBtn.disabled = false;
+
+                    resetView();
+                    updateFrameSize();
+                    
+                    // Default align center
+                    setActiveAlignButton('mc');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetView() {
+            scale = 1;
+            panX = 0;
+            panY = 0;
+            flipH = false;
+            flipV = false;
+            zoomSlider.value = 100;
+            zoomLabel.textContent = '100%';
+            render();
+        }
+
+        // === RENDER ===
+        function render() {
+            if (!img) return;
+
+            const frameRect = viewportFrame.getBoundingClientRect();
+            const viewW = frameRect.width;
+            const viewH = frameRect.height;
+            const dpr = window.devicePixelRatio || 1;
+
+            previewCanvas.width = viewW * dpr;
+            previewCanvas.height = viewH * dpr;
+            previewCanvas.style.width = viewW + 'px';
+            previewCanvas.style.height = viewH + 'px';
+            ctx.scale(dpr, dpr);
+
+            ctx.clearRect(0, 0, viewW, viewH);
+
+            // Background
+            if (customBgCheck.checked) {
+                ctx.fillStyle = bgColorPicker.value;
+                ctx.fillRect(0, 0, viewW, viewH);
+            }
+
+            // Image Bounds Logic
+            const viewRatio = viewW / viewH;
+            let baseW, baseH;
+            
+            // Contain logic
+            if (imgRatio > viewRatio) {
+                baseW = viewW;
+                baseH = viewW / imgRatio;
+            } else {
+                baseH = viewH;
+                baseW = viewH * imgRatio;
+            }
+
+            const displayW = baseW * scale;
+            const displayH = baseH * scale;
+
+            const x = (viewW - displayW) / 2 + panX;
+            const y = (viewH - displayH) / 2 + panY;
+
+            // Save context for transforms
+            ctx.save();
+
+            // Apply Flip
+            if (flipH || flipV) {
+                ctx.translate(viewW/2, viewH/2);
+                ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+                ctx.translate(-viewW/2, -viewH/2);
+            }
+
+            ctx.drawImage(img, x, y, displayW, displayH);
+            ctx.restore();
+        }
+
+        // === ALIGNMENT LOGIC ===
+        function alignImage(position) {
+            if (!img) return;
+            
+            const frameRect = viewportFrame.getBoundingClientRect();
+            const viewW = frameRect.width;
+            const viewH = frameRect.height;
+
+            const viewRatio = viewW / viewH;
+            let baseW, baseH;
+            if (imgRatio > viewRatio) {
+                baseW = viewW;
+                baseH = viewW / imgRatio;
+            } else {
+                baseH = viewH;
+                baseW = viewH * imgRatio;
+            }
+            const displayW = baseW * scale;
+            const displayH = baseH * scale;
+
+            // Calculate Offsets
+            // Center: 0,0
+            // Top-Left: displayW/2 - viewW/2 ? No.
+            // Logic: 
+            // Draw X = (viewW - displayW)/2 + panX.
+            // We want Draw X = 0 (Left).
+            // (viewW - displayW)/2 + panX = 0 => panX = (displayW - viewW)/2.
+            
+            const isLandscape = displayW > viewW;
+            const isPortrait = displayH > viewH;
+
+            // Defaults (Center)
+            let pX = 0;
+            let pY = 0;
+
+            switch(position) {
+                case 'tl': 
+                    pX = (displayW - viewW) / 2; 
+                    pY = (displayH - viewH) / 2; 
+                    break;
+                case 'tc': 
+                    pX = 0; 
+                    pY = (displayH - viewH) / 2; 
+                    break;
+                case 'tr': 
+                    pX = -(displayW - viewW) / 2; 
+                    pY = (displayH - viewH) / 2; 
+                    break;
+                case 'ml': 
+                    pX = (displayW - viewW) / 2; 
+                    pY = 0; 
+                    break;
+                case 'mc': 
+                    pX = 0; pY = 0; 
+                    break;
+                case 'mr': 
+                    pX = -(displayW - viewW) / 2; 
+                    pY = 0; 
+                    break;
+                case 'bl': 
+                    pX = (displayW - viewW) / 2; 
+                    pY = -(displayH - viewH) / 2; 
+                    break;
+                case 'bc': 
+                    pX = 0; 
+                    pY = -(displayH - viewH) / 2; 
+                    break;
+                case 'br': 
+                    pX = -(displayW - viewW) / 2; 
+                    pY = -(displayH - viewH) / 2; 
+                    break;
+            }
+
+            panX = pX;
+            panY = pY;
+            render();
+        }
+
+        function setActiveAlignButton(id) {
+            document.querySelectorAll('.align-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.querySelector(`[data-align="${id}"]`);
+            if(btn) btn.classList.add('active');
+        }
+
+        // === EXPORT LOGIC ===
+        function exportImage() {
+            if (!img) return;
+
+            const outW = parseInt(widthInput.value) || 1080;
+            const outH = parseInt(heightInput.value) || 1080;
+            const fmt = formatSelect.value;
+            const quality = qualitySlider.value / 100;
+
+            const expCanvas = document.createElement('canvas');
+            expCanvas.width = outW;
+            expCanvas.height = outH;
+            const expCtx = expCanvas.getContext('2d');
+
+            if (customBgCheck.checked || fmt === 'jpeg') {
+                expCtx.fillStyle = customBgCheck.checked ? bgColorPicker.value : '#ffffff';
+                expCtx.fillRect(0, 0, outW, outH);
+            }
+
+            const frameRect = viewportFrame.getBoundingClientRect();
+            const viewW = frameRect.width;
+            const viewH = frameRect.height;
+            
+            const viewRatio = viewW / viewH; // Should match output ratio
+            
+            let baseW, baseH;
+            // Recalculate base for export size
+            if (imgRatio > (outW/outH)) {
+                baseW = outW;
+                baseH = outW / imgRatio;
+            } else {
+                baseH = outH;
+                baseW = outH * imgRatio;
+            }
+
+            const displayW = baseW * scale;
+            const displayH = baseH * scale;
+
+            const panScale = outW / viewW;
+            const expPanX = panX * panScale;
+            const expPanY = panY * panScale;
+
+            const x = (outW - displayW) / 2 + expPanX;
+            const y = (outH - displayH) / 2 + expPanY;
+
+            // Apply transforms for export
+            expCtx.save();
+            if (flipH || flipV) {
+                expCtx.translate(outW/2, outH/2);
+                expCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+                expCtx.translate(-outW/2, -outH/2);
+            }
+
+            expCtx.drawImage(img, x, y, displayW, displayH);
+            expCtx.restore();
+
+            const mime = fmt === 'png' ? 'image/png' : fmt === 'jpeg' ? 'image/jpeg' : 'image/webp';
+            const url = expCanvas.toDataURL(mime, fmt === 'png' ? 1.0 : quality);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `snapedit-${outW}x${outH}.${fmt}`;
+            link.click();
+        }
+
+        // === EVENT LISTENERS ===
+
+        browseBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) loadImage(e.target.files[0]);
+        });
+
+        // Drag & Drop
+        viewportContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            emptyState.classList.add('drag-over');
+        });
+        viewportContainer.addEventListener('dragleave', (e) => {
+            emptyState.classList.remove('drag-over');
+        });
+        viewportContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            emptyState.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+        });
+
+        // Paste
+        document.addEventListener('paste', (e) => {
+            const items = e.clipboardData.items;
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    loadImage(item.getAsFile());
+                    break;
+                }
+            }
+        });
+
+        // Zoom
+        zoomSlider.addEventListener('input', (e) => {
+            scale = parseInt(e.target.value) / 100;
+            zoomLabel.textContent = e.target.value + '%';
+            render();
+        });
+        $('zoomInBtn').addEventListener('click', () => {
+            const val = clamp(parseInt(zoomSlider.value) + 20, 10, 500);
+            zoomSlider.value = val;
+            scale = val / 100;
+            zoomLabel.textContent = val + '%';
+            render();
+        });
+        $('zoomOutBtn').addEventListener('click', () => {
+            const val = clamp(parseInt(zoomSlider.value) - 20, 10, 500);
+            zoomSlider.value = val;
+            scale = val / 100;
+            zoomLabel.textContent = val + '%';
+            render();
+        });
+        $('fitBtn').addEventListener('click', () => {
+            zoomSlider.value = 100;
+            scale = 1;
+            zoomLabel.textContent = '100%';
+            alignImage('mc'); // Fit and center
+        });
+
+        // Pan
+        viewportFrame.addEventListener('mousedown', (e) => {
+            if (!img) return;
+            isDragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            startPanX = panX;
+            startPanY = panY;
+            viewportFrame.style.cursor = 'grabbing';
+        });
+        
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            panX = startPanX + (e.clientX - dragStartX);
+            panY = startPanY + (e.clientY - dragStartY);
+            render();
+            // Remove active alignment highlight if manual drag
+            document.querySelectorAll('.align-btn').forEach(b => b.classList.remove('active'));
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            viewportFrame.style.cursor = 'grab';
+        });
+
+        viewportFrame.addEventListener('wheel', (e) => {
+            if (!img) return;
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -15 : 15;
+            const val = clamp(parseInt(zoomSlider.value) + delta, 10, 500);
+            zoomSlider.value = val;
+            scale = val / 100;
+            zoomLabel.textContent = val + '%';
+            render();
+        }, { passive: false });
+
+        // Dimensions
+        widthInput.addEventListener('input', () => {
+            if (lockRatio.checked) {
+                heightInput.value = Math.round(widthInput.value / lastOutputRatio);
+            } else {
+                lastOutputRatio = (parseInt(widthInput.value) || 1) / (parseInt(heightInput.value) || 1);
+            }
+            updateFrameSize();
+        });
+        heightInput.addEventListener('input', () => {
+            if (lockRatio.checked) {
+                widthInput.value = Math.round(heightInput.value * lastOutputRatio);
+            } else {
+                lastOutputRatio = (parseInt(widthInput.value) || 1) / (parseInt(heightInput.value) || 1);
+            }
+            updateFrameSize();
+        });
+
+        // Presets
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                widthInput.value = btn.dataset.w;
+                heightInput.value = btn.dataset.h;
+                lastOutputRatio = parseInt(btn.dataset.w) / parseInt(btn.dataset.h);
+                updateFrameSize();
+            });
+        });
+
+        // Alignment Buttons
+        document.querySelectorAll('.align-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setActiveAlignButton(btn.dataset.align);
+                alignImage(btn.dataset.align);
+            });
+        });
+
+        // Transforms
+        $('flipH').addEventListener('click', () => { flipH = !flipH; render(); });
+        $('flipV').addEventListener('click', () => { flipV = !flipV; render(); });
+        $('resetTransform').addEventListener('click', resetView);
+
+        // Format
+        formatSelect.addEventListener('change', () => {
+            qualityWrap.classList.toggle('hidden', formatSelect.value === 'png');
+        });
+        qualitySlider.addEventListener('input', () => {
+            qualityVal.textContent = qualitySlider.value + '%';
+        });
+
+        customBgCheck.addEventListener('change', render);
+        bgColorPicker.addEventListener('input', render);
+
+        exportBtn.addEventListener('click', exportImage);
+        
+        clearBtn.addEventListener('click', () => {
+            img = null;
+            emptyState.classList.remove('hidden');
+            workspace.classList.add('hidden');
+            zoomBar.classList.add('hidden');
+            statusSize.classList.add('hidden');
+            exportBtn.disabled = true;
+            fileInput.value = '';
+            scale = 1; panX = 0; panY = 0;
+            $('infoOriginal').textContent = '-';
+            $('infoOutput').textContent = '-';
+        });
+
+        window.addEventListener('resize', updateFrameSize);
+
+    </script>
+</body>
+</html>
