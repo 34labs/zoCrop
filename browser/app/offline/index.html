@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zocrop.io - Creative Studio Workspace</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="./imut.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Blue Cartoon Pop Palette */
+            --bg-main: #DBEAFE;
+            --bg-sidebar: #EFF6FF;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F0F7FF;
+            --bg-input: #FFFFFF;
+
+            --accent-primary: #3B82F6;
+            --accent-primary-hover: #2563EB;
+            --accent-primary-dark: #1D4ED8;
+            --accent-deeper: #1E40AF;
+            --accent-secondary: #F472B6;
+            --accent-secondary-dark: #BE185D;
+            --accent-success: #34D399;
+            --accent-warning: #FBBF24;
+            --accent-warning-dark: #D97706;
+            --accent-danger: #EF4444;
+
+            --text-main: #1E3A5F;
+            --text-muted: #6B8DB5;
+            --text-muted-dark: #94B8DB;
+
+            --border-color: #3B82F6;
+            --border-light: #93C5FD;
+            --border-focus: #2563EB;
+
+            --shadow-hard: 4px 4px 0 #1D4ED8;
+            --shadow-hard-sm: 2px 2px 0 #1D4ED8;
+            --shadow-hard-lg: 6px 6px 0 #1D4ED8;
+            --shadow-hard-pink: 4px 4px 0 #BE185D;
+            --shadow-hard-yellow: 3px 3px 0 #D97706;
+            --transition-bounce: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', system-ui, sans-serif;
+            background: var(--bg-main);
+            background-image:
+                radial-gradient(circle at 15% 85%, rgba(251, 191, 36, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 15%, rgba(244, 114, 182, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-sidebar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 99px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Utility Classes */
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .flex-1 {
+            flex: 1 1 0%;
+        }
+
+        .flex-shrink-0 {
+            flex-shrink: 0;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        .gap-1 {
+            gap: 4px;
+        }
+
+        .gap-2 {
+            gap: 8px;
+        }
+
+        .gap-3 {
+            gap: 12px;
+        }
+
+        .gap-4 {
+            gap: 16px;
+        }
+
+        .p-3 {
+            padding: 12px;
+        }
+
+        .p-4 {
+            padding: 16px;
+        }
+
+        .px-2 {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .px-3 {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .px-4 {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .px-6 {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .py-1 {
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .py-1-5 {
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+
+        .py-2 {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        .py-3 {
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .mb-1 {
+            margin-bottom: 4px;
+        }
+
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+
+        .mb-3 {
+            margin-bottom: 12px;
+        }
+
+        .mb-4 {
+            margin-bottom: 16px;
+        }
+
+        .ml-auto {
+            margin-left: auto;
+        }
+
+        .w-4 {
+            width: 16px;
+        }
+
+        .w-5 {
+            width: 20px;
+        }
+
+        .w-6 {
+            width: 24px;
+        }
+
+        .w-7 {
+            width: 28px;
+        }
+
+        .w-8 {
+            width: 32px;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-4 {
+            height: 16px;
+        }
+
+        .h-5 {
+            height: 20px;
+        }
+
+        .h-6 {
+            height: 24px;
+        }
+
+        .h-7 {
+            height: 28px;
+        }
+
+        .h-8 {
+            height: 32px;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .text-xs {
+            font-size: 11px;
+        }
+
+        .text-sm {
+            font-size: 13px;
+        }
+
+        .text-lg {
+            font-size: 16px;
+        }
+
+        .text-xl {
+            font-size: 18px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-extrabold {
+            font-weight: 800;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .leading-none {
+            line-height: 1;
+        }
+
+        .tracking-tight {
+            letter-spacing: -0.025em;
+        }
+
+        .tracking-wider {
+            letter-spacing: 0.075em;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-cols-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .inset-4 {
+            top: 16px;
+            right: 16px;
+            bottom: 16px;
+            left: 16px;
+        }
+
+        .inset-8 {
+            top: 32px;
+            right: 32px;
+            bottom: 32px;
+            left: 32px;
+        }
+
+        .space-y-3>*+* {
+            margin-top: 12px;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .overflow-y-auto {
+            overflow-y: auto;
+        }
+
+        .border-r {
+            border-right-width: 3px;
+            border-right-style: solid;
+        }
+
+        .border-t {
+            border-top-width: 3px;
+            border-top-style: solid;
+        }
+
+        /* === HEADER === */
+        header {
+            background: #FFFFFF;
+            border-bottom: 3px solid var(--border-color);
+            box-shadow: 0 4px 0 var(--accent-primary-dark);
+            position: relative;
+            z-index: 20;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #287aff 0%, #8a5cf69c 100%);
+            border: 3px solid var(--accent-primary-dark);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-hard-sm);
+            position: relative;
+        }
+
+        .logo-star {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 14px;
+            height: 14px;
+            background: var(--accent-warning);
+            border: 2px solid var(--accent-warning-dark);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        .title-text {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--accent-primary-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle-text {
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+        }
+
+        /* === CARD PANELS === */
+        .card-pop {
+            background: var(--bg-card);
+            border: 3px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-hard);
+        }
+
+        /* === BUTTONS === */
+        .btn-pop {
+            font-family: 'Nunito', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 14px;
+            border: 2.5px solid var(--border-color);
+            border-radius: 10px;
+            background: #FFFFFF;
+            color: var(--accent-primary-dark);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: var(--shadow-hard-sm);
+            transition: var(--transition-bounce);
+            position: relative;
+        }
+
+        .btn-pop:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-hard);
+            background: var(--bg-card-hover);
+        }
+
+        .btn-pop:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 0 0 0 var(--accent-primary-dark);
+        }
+
+        .btn-pop:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-pop:focus-visible {
+            outline: 3px solid var(--accent-warning);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #FFFFFF;
+            border-color: var(--accent-primary-dark);
+            box-shadow: var(--shadow-hard);
+            font-size: 13px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-primary-hover);
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-hard-lg);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: var(--shadow-hard-sm);
+        }
+
+        .btn-pink {
+            background: var(--accent-secondary);
+            color: #FFFFFF;
+            border-color: var(--accent-secondary-dark);
+            box-shadow: var(--shadow-hard-pink);
+        }
+
+        .btn-pink:hover:not(:disabled) {
+            background: #EC4899;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--accent-secondary-dark);
+        }
+
+        .btn-danger {
+            background: #FEE2E2;
+            color: var(--accent-danger);
+            border-color: var(--accent-danger);
+            box-shadow: 2px 2px 0 #B91C1C;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: var(--accent-danger);
+            color: #FFFFFF;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 #B91C1C;
+        }
+
+        /* === INPUTS === */
+        .input-pop {
+            border: 2.5px solid var(--border-light);
+            border-radius: 10px;
+            background: var(--bg-input);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 13px;
+            transition: var(--transition-smooth);
+        }
+
+        .input-pop:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        /* === RANGE SLIDERS === */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #DBEAFE;
+            border: 2px solid var(--border-light);
+            border-radius: 99px;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-primary);
+            border: 3px solid var(--accent-primary-dark);
+            border-radius: 50%;
+            cursor: grab;
+            transition: var(--transition-bounce);
+            box-shadow: 2px 2px 0 var(--accent-deeper);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+            background: var(--accent-primary-hover);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        /* === DROP ZONE === */
+        .drop-zone {
+            border: 4px dashed var(--accent-primary);
+            background: rgba(219, 234, 254, 0.5);
+            border-radius: 24px;
+            transition: var(--transition-bounce);
+        }
+
+        .drop-zone:hover {
+            border-color: var(--accent-primary-dark);
+            background: rgba(219, 234, 254, 0.8);
+            transform: scale(1.005);
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-secondary);
+            transform: scale(1.01);
+            box-shadow: 0 0 0 6px rgba(244, 114, 182, 0.2);
+        }
+
+        .drop-icon-wrap {
+            width: 72px;
+            height: 72px;
+            background: var(--accent-primary);
+            border: 3px solid var(--accent-primary-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-hard);
+            animation: float-bounce 3s ease-in-out infinite;
+        }
+
+        /* === WORKSPACE === */
+        .workspace-area {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #F0F4F8;
+            background-image: radial-gradient(#CBD5E1 0.8px, transparent 0.8px);
+            background-size: 16px 16px;
+            border: 3px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: inset 0 0 40px rgba(59, 130, 246, 0.06);
+        }
+
+        .viewport-frame {
+            position: relative;
+            border: 3px solid var(--accent-primary-dark);
+            box-shadow: var(--shadow-hard-lg), 0 0 0 9999px rgba(241, 245, 249, 0.6);
+            transition: width 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: grab;
+            background: #FFFFFF;
+        }
+
+        .viewport-frame:active {
+            cursor: grabbing;
+        }
+
+        .checker-bg {
+            background-image:
+                linear-gradient(45deg, #E8F0FE 25%, transparent 25%),
+                linear-gradient(-45deg, #E8F0FE 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #E8F0FE 75%),
+                linear-gradient(-45deg, transparent 75%, #E8F0FE 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #F8FAFF;
+        }
+
+        /* === FLOATING PILL === */
+        .floating-pill {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FFFFFF;
+            border: 3px solid var(--border-color);
+            border-radius: 99px;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-hard);
+            z-index: 20;
+        }
+
+        /* === SIDEBAR === */
+        #sidebar {
+            background-color: var(--bg-sidebar);
+            background-image: radial-gradient(var(--border-light) 0.5px, transparent 0.5px);
+            background-size: 14px 14px;
+            border-right: 3px solid var(--border-color) !important;
+        }
+
+        .sidebar-scroll {
+            scrollbar-width: thin;
+        }
+
+        .control-section {
+            border: 3px solid var(--border-color);
+            background: #FFFFFF;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-hard-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .control-section:hover {
+            box-shadow: var(--shadow-hard);
+        }
+
+        /* === ALIGN GRID === */
+        .align-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            width: 100%;
+        }
+
+        .align-btn {
+            aspect-ratio: 1.2;
+            border: 2.5px solid var(--border-light);
+            background: #FFFFFF;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-bounce);
+            padding: 0;
+        }
+
+        .align-btn:hover {
+            border-color: var(--accent-primary);
+            background: #EFF6FF;
+            transform: translate(-1px, -1px);
+            box-shadow: 2px 2px 0 var(--accent-primary-dark);
+        }
+
+        .align-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary-dark);
+            box-shadow: 2px 2px 0 var(--accent-deeper);
+        }
+
+        .align-btn svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            transition: var(--transition-smooth);
+        }
+
+        .align-btn.active svg {
+            color: #FFFFFF;
+        }
+
+        .size-badge {
+            background: #FEF3C7;
+            border: 2px solid var(--accent-warning);
+            border-radius: 8px;
+            padding: 3px 10px;
+            font-weight: 800;
+            font-size: 11px;
+            color: #92400E;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 2px 2px 0 var(--accent-warning-dark);
+        }
+
+        /* === ACCORDION === */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            padding: 2px 0;
+        }
+
+        .section-header:hover .section-title {
+            color: var(--accent-primary-dark);
+        }
+
+        .section-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--accent-primary-dark);
+            transition: var(--transition-smooth);
+        }
+
+        .section-chevron {
+            width: 16px;
+            height: 16px;
+            color: var(--accent-primary);
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .section-collapse {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .section-collapse.collapsed {
+            grid-template-rows: 0fr;
+        }
+
+        .section-collapse>div {
+            overflow: hidden;
+        }
+
+        .section-content-wrapper {
+            padding-top: 10px;
+        }
+
+        /* === FILTER ROWS === */
+        .filter-row {
+            margin-bottom: 10px;
+        }
+
+        .filter-row label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .filter-row .val {
+            color: var(--accent-primary-dark);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        /* === PRESET CHIPS === */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .preset-chip {
+            border: 2.5px solid var(--border-light);
+            background: #FFFFFF;
+            border-radius: 8px;
+            padding: 6px 2px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent-primary-dark);
+            cursor: pointer;
+            transition: var(--transition-bounce);
+            text-align: center;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .preset-chip:hover {
+            border-color: var(--accent-primary);
+            background: #EFF6FF;
+            transform: translate(-1px, -1px);
+            box-shadow: 2px 2px 0 var(--accent-primary-dark);
+        }
+
+        .preset-chip.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary-dark);
+            color: #FFFFFF;
+            box-shadow: 2px 2px 0 var(--accent-deeper);
+        }
+
+        /* === TOGGLE SWITCHES === */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .toggle-switch {
+            width: 38px;
+            height: 22px;
+            background: #DBEAFE;
+            border: 2.5px solid var(--border-light);
+            border-radius: 99px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition-bounce);
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.on {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary-dark);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background: #FFFFFF;
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            transition: var(--transition-bounce);
+            box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-switch.on::after {
+            left: 18px;
+            border-color: var(--accent-primary-dark);
+        }
+
+        /* === STATS HUD === */
+        .stats-hud {
+            background: var(--accent-primary-dark);
+            border: 3px solid var(--accent-deeper);
+            border-radius: 12px;
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            box-shadow: var(--shadow-hard-sm);
+            color: #FFFFFF;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .stats-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stats-label {
+            color: #93C5FD;
+        }
+
+        .stats-val {
+            font-weight: 700;
+            color: #FDE68A;
+        }
+
+        /* === TOAST === */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .toast-msg {
+            background: #FFFFFF;
+            border: 3px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 13px;
+            box-shadow: var(--shadow-hard);
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: auto;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* === COLOR PICKER === */
+        input[type="color"] {
+            -webkit-appearance: none;
+            appearance: none;
+            border: 2.5px solid var(--border-light);
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: 2px solid var(--border-light);
+            border-radius: 6px;
+        }
+
+        /* === ROTATION GRID === */
+        .rot-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        /* === CHECKBOX === */
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-primary);
+            cursor: pointer;
+        }
+
+        /* === SELECT === */
+        select.input-pop {
+            appearance: none;
+            font-family: 'Nunito', sans-serif;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%233B82F6'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
+        /* === KBD === */
+        .kbd {
+            background: #DBEAFE;
+            color: var(--accent-primary-dark);
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 5px;
+            border: 2px solid var(--border-light);
+            font-family: 'Nunito', sans-serif;
+            box-shadow: 1px 1px 0 var(--border-light);
+        }
+
+        /* === COMPARE BADGE === */
+        .compare-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--accent-warning);
+            color: #1E3A5F;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+            padding: 5px 14px;
+            border: 3px solid var(--accent-warning-dark);
+            border-radius: 8px;
+            box-shadow: var(--shadow-hard-yellow);
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .compare-badge.show {
+            opacity: 1;
+        }
+
+        /* === OFFLINE BADGE === */
+        .offline-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 11px;
+            background: #D1FAE5;
+            border: 2px solid var(--accent-success);
+            color: #065F46;
+            box-shadow: 2px 2px 0 #047857;
+        }
+
+        .offline-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-success);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes float-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        @keyframes pop-in {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slide-in-left {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* === MOBILE === */
+        .sidebar-toggle {
+            display: none !important;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(30, 58, 95, 0.5);
+            z-index: 25;
+            backdrop-filter: blur(4px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-toggle {
+                display: flex !important;
+            }
+
+            #sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 30;
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+                width: 300px;
+                box-shadow: 10px 0 0 var(--accent-primary-dark);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Zoom Bar Responsive Optimization */
+        @media (max-width: 480px) {
+            #zoomBar {
+                padding: 4px 8px !important;
+                gap: 6px !important;
+                bottom: 12px !important;
+            }
+
+            #zoomBar span {
+                display: none !important;
+            }
+
+            #zoomSlider {
+                display: none !important;
+            }
+        }
+
+        /* Floating Canvas Quick Actions */
+        .quick-toolbar {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 25;
+            display: flex;
+            gap: 8px;
+        }
+
+        .quick-toolbar .btn-pop {
+            padding: 0 !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: 2.5px solid var(--border-color) !important;
+            background: #FFFFFF !important;
+            box-shadow: var(--shadow-hard-sm) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .quick-toolbar .btn-pop:hover:not(:disabled) {
+            transform: translate(-1px, -1px) !important;
+            box-shadow: 3px 3px 0 var(--accent-primary-dark) !important;
+            background: var(--bg-card-hover) !important;
+        }
+
+        .quick-toolbar .btn-pop:active:not(:disabled) {
+            transform: translate(1px, 1px) !important;
+            box-shadow: 0 0 0 var(--accent-primary-dark) !important;
+        }
+
+        /* Sidebar Drawer Close Button */
+        .sidebar-close-btn {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-close-btn {
+                display: flex !important;
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                z-index: 40;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="px-6 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <button class="sidebar-toggle btn-pop btn-primary w-8 h-8 items-center justify-center p-0" id="sidebarToggle"
+                aria-label="Menu">
+                <img src="./svg/burgir.svg" alt="Hamburger" class="w-5 h-5">
+            </button>
+            <div class="logo-icon">
+                <img src="./svg/zocrop.svg" alt="Cropin" style="width: 23px;">
+                <div class="logo-star"></div>
+            </div>
+            <div>
+                <h1 class="title-text leading-none">Zocrop.io</h1>
+                <p class="subtitle-text" style="margin-top:2px;">Zoomin' Crop</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div id="statusSize" class="hidden size-badge">1080 x 1080</div>
+            <div class="offline-badge">
+                <div class="offline-dot"></div>
+                <span>Local & Secure</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main -->
+    <main class="flex-1 flex overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex flex-col overflow-hidden flex-shrink-0 relative" style="width:300px;">
+            <!-- Close Button (Mobile Only) -->
+            <button class="sidebar-close-btn btn-pop btn-danger w-8 h-8 items-center justify-center p-0"
+                style="border-radius:50% !important; background: var(--accent-danger); border-color: #B91C1C;" id="sidebarCloseBtn" aria-label="Tutup Menu">
+                <img src="./svg/burgir.svg" alt="Hamburger" class="w-5 h-5">
+            </button>
+            <div class="flex-1 overflow-y-auto sidebar-scroll p-4 space-y-3">
+
+                <!-- UKURAN OUTPUT -->
+                <div class="control-section">
+                    <div class="section-header" onclick="toggleSection('size')">
+                        <h3 class="section-title">Ukuran Output</h3>
+                        <svg class="section-chevron" id="chevron-size" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="section-collapse" id="section-size">
+                        <div class="section-content-wrapper">
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                <div class="relative">
+                                    <span class="absolute font-bold"
+                                        style="top:50%; left:10px; transform:translateY(-50%); font-size:10px; color:var(--text-muted);">W</span>
+                                    <input type="number" id="widthInput" value="1080"
+                                        class="input-pop w-full py-1-5 text-center"
+                                        style="padding-left:24px; padding-right:8px;">
+                                </div>
+                                <div class="relative">
+                                    <span class="absolute font-bold"
+                                        style="top:50%; left:10px; transform:translateY(-50%); font-size:10px; color:var(--text-muted);">H</span>
+                                    <input type="number" id="heightInput" value="1080"
+                                        class="input-pop w-full py-1-5 text-center"
+                                        style="padding-left:24px; padding-right:8px;">
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <input type="checkbox" id="lockRatio" checked>
+                                <label for="lockRatio" class="text-xs font-bold" style="color:var(--text-muted);">Kunci
+                                    Rasio Aspek</label>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1 mb-1">
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1080" data-h="1080">1:1</button>
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1080" data-h="1920">9:16</button>
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1920" data-h="1080">16:9</button>
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1200" data-h="630">OG</button>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1">
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1440" data-h="1080">4:3</button>
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1080" data-h="1350">4:5</button>
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1080" data-h="1440">3:4</button>
+                                <button class="preset-btn btn-pop px-1 py-1 text-xs" style="font-size:9px;"
+                                    data-w="1080" data-h="1620">2:3</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRANSFORMASI -->
+                <div class="control-section">
+                    <div class="section-header" onclick="toggleSection('transform')">
+                        <h3 class="section-title">Transformasi</h3>
+                        <svg class="section-chevron" id="chevron-transform" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="section-collapse" id="section-transform">
+                        <div class="section-content-wrapper">
+                            <div class="rot-grid mb-2">
+                                <button class="rot-btn btn-pop px-1 py-1 text-xs active" data-rot="0">0&deg;</button>
+                                <button class="rot-btn btn-pop px-1 py-1 text-xs" data-rot="90">90&deg;</button>
+                                <button class="rot-btn btn-pop px-1 py-1 text-xs" data-rot="180">180&deg;</button>
+                                <button class="rot-btn btn-pop px-1 py-1 text-xs" data-rot="270">270&deg;</button>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button id="flipH" class="btn-pop text-xs py-1-5">H-Flip</button>
+                                <button id="flipV" class="btn-pop text-xs py-1-5">V-Flip</button>
+                                <button id="resetTransform" class="btn-pop btn-danger text-xs py-1-5">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- POSISI & ALIGN -->
+                <div class="control-section">
+                    <div class="section-header" onclick="toggleSection('align')">
+                        <h3 class="section-title">Posisi &amp; Align</h3>
+                        <svg class="section-chevron" id="chevron-align" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="section-collapse" id="section-align">
+                        <div class="section-content-wrapper">
+                            <div class="align-grid">
+                                <button class="align-btn" data-align="tl" data-tip="Kiri Atas"><svg viewBox="0 0 10 10">
+                                        <rect x="1" y="1" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn" data-align="tc" data-tip="Tengah Atas"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="3.5" y="1" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn" data-align="tr" data-tip="Kanan Atas"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="6" y="1" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn" data-align="ml" data-tip="Kiri Tengah"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="1" y="3.5" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn active" data-align="mc" data-tip="Tengah"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="3.5" y="3.5" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn" data-align="mr" data-tip="Kanan Tengah"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="6" y="3.5" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn" data-align="bl" data-tip="Kiri Bawah"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="1" y="6" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn" data-align="bc" data-tip="Tengah Bawah"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="3.5" y="6" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                                <button class="align-btn" data-align="br" data-tip="Kanan Bawah"><svg
+                                        viewBox="0 0 10 10">
+                                        <rect x="6" y="6" width="3" height="3" fill="currentColor" />
+                                    </svg></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILTER GAMBAR -->
+                <div class="control-section">
+                    <div class="section-header" onclick="toggleSection('filters')">
+                        <h3 class="section-title">Filter Gambar</h3>
+                        <svg class="section-chevron" id="chevron-filters" viewBox="0 0 20 20" fill="currentColor"
+                            style="transform:rotate(-90deg)">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="section-collapse collapsed" id="section-filters">
+                        <div class="section-content-wrapper">
+                            <div class="preset-grid">
+                                <button class="filter-preset preset-chip active" data-preset="original">Asli</button>
+                                <button class="filter-preset preset-chip" data-preset="bw">B&W</button>
+                                <button class="filter-preset preset-chip" data-preset="vintage">Vintage</button>
+                                <button class="filter-preset preset-chip" data-preset="warm">Warm</button>
+                                <button class="filter-preset preset-chip" data-preset="cool">Cool</button>
+                                <button class="filter-preset preset-chip" data-preset="dramatic">Dramatic</button>
+                                <button class="filter-preset preset-chip" data-preset="fade">Fade</button>
+                                <button class="filter-preset preset-chip" data-preset="vivid">Vivid</button>
+                            </div>
+                            <div class="filter-row">
+                                <label>Kecerahan <span class="val" id="val-brightness">100%</span></label>
+                                <input type="range" id="filter-brightness" min="0" max="200" value="100" class="w-full">
+                            </div>
+                            <div class="filter-row">
+                                <label>Kontras <span class="val" id="val-contrast">100%</span></label>
+                                <input type="range" id="filter-contrast" min="0" max="200" value="100" class="w-full">
+                            </div>
+                            <div class="filter-row">
+                                <label>Saturasi <span class="val" id="val-saturate">100%</span></label>
+                                <input type="range" id="filter-saturate" min="0" max="200" value="100" class="w-full">
+                            </div>
+                            <div class="filter-row">
+                                <label>Blur <span class="val" id="val-blur">0px</span></label>
+                                <input type="range" id="filter-blur" min="0" max="20" value="0" step="0.5"
+                                    class="w-full">
+                            </div>
+                            <div class="filter-row">
+                                <label>Grayscale <span class="val" id="val-grayscale">0%</span></label>
+                                <input type="range" id="filter-grayscale" min="0" max="100" value="0" class="w-full">
+                            </div>
+                            <div class="filter-row">
+                                <label>Sepia <span class="val" id="val-sepia">0%</span></label>
+                                <input type="range" id="filter-sepia" min="0" max="100" value="0" class="w-full">
+                            </div>
+                            <div class="filter-row">
+                                <label>Hue Rotate <span class="val" id="val-hueRotate">0&deg;</span></label>
+                                <input type="range" id="filter-hueRotate" min="0" max="360" value="0" class="w-full">
+                            </div>
+                            <div class="filter-row">
+                                <label>Invert <span class="val" id="val-invert">0%</span></label>
+                                <input type="range" id="filter-invert" min="0" max="100" value="0" class="w-full">
+                            </div>
+                            <button id="resetFilters" class="btn-pop btn-danger w-full py-1-5 text-xs mt-1">Reset
+                                Filter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EFEK -->
+                <div class="control-section">
+                    <div class="section-header" onclick="toggleSection('effects')">
+                        <h3 class="section-title">Efek</h3>
+                        <svg class="section-chevron" id="chevron-effects" viewBox="0 0 20 20" fill="currentColor"
+                            style="transform:rotate(-90deg)">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="section-collapse collapsed" id="section-effects">
+                        <div class="section-content-wrapper">
+                            <div class="toggle-row">
+                                <div class="toggle-switch" id="toggle-shadow" onclick="toggleSwitch(this,'shadow')">
+                                </div>
+                                <span class="text-xs font-bold" style="color:var(--text-muted);">Drop Shadow</span>
+                            </div>
+                            <div id="shadow-controls" class="hidden mb-3"
+                                style="padding-left:8px; border-left: 3px solid var(--border-light);">
+                                <div class="filter-row">
+                                    <label>Blur <span class="val" id="val-shadowBlur">10px</span></label>
+                                    <input type="range" id="shadowBlur" min="0" max="100" value="10" class="w-full">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="filter-row">
+                                        <label>Offset X <span class="val" id="val-shadowX">5</span></label>
+                                        <input type="range" id="shadowX" min="-50" max="50" value="5" class="w-full">
+                                    </div>
+                                    <div class="filter-row">
+                                        <label>Offset Y <span class="val" id="val-shadowY">5</span></label>
+                                        <input type="range" id="shadowY" min="-50" max="50" value="5" class="w-full">
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold" style="color:var(--text-muted);">Warna</span>
+                                    <input type="color" id="shadowColor" value="#000000">
+                                    <div class="filter-row flex-1 mb-0" style="margin-bottom:0">
+                                        <label>Opasitas <span class="val" id="val-shadowOpacity">40%</span></label>
+                                        <input type="range" id="shadowOpacity" min="0" max="100" value="40"
+                                            class="w-full">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="toggle-row">
+                                <div class="toggle-switch" id="toggle-border" onclick="toggleSwitch(this,'border')">
+                                </div>
+                                <span class="text-xs font-bold" style="color:var(--text-muted);">Border</span>
+                            </div>
+                            <div id="border-controls" class="hidden mb-3"
+                                style="padding-left:8px; border-left: 3px solid var(--border-light);">
+                                <div class="filter-row">
+                                    <label>Lebar <span class="val" id="val-borderWidth">8px</span></label>
+                                    <input type="range" id="borderWidth" min="1" max="100" value="8" class="w-full">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold" style="color:var(--text-muted);">Warna</span>
+                                    <input type="color" id="borderColor" value="#ffffff">
+                                </div>
+                            </div>
+
+                            <div class="filter-row">
+                                <label>Sudut Membulat <span class="val" id="val-corners">0px</span></label>
+                                <input type="range" id="corners" min="0" max="500" value="0" class="w-full">
+                            </div>
+
+                            <div class="toggle-row">
+                                <div class="toggle-switch" id="toggle-padding" onclick="toggleSwitch(this,'padding')">
+                                </div>
+                                <span class="text-xs font-bold" style="color:var(--text-muted);">Padding / Margin</span>
+                            </div>
+                            <div id="padding-controls" class="hidden"
+                                style="padding-left:8px; border-left: 3px solid var(--border-light);">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <input type="checkbox" id="padLink" checked>
+                                    <label for="padLink" class="text-xs font-bold"
+                                        style="color:var(--text-muted);">Padding Seragam</label>
+                                </div>
+                                <div id="padUniform" class="filter-row">
+                                    <label>Semua Sisi <span class="val" id="val-padAll">50px</span></label>
+                                    <input type="range" id="padAll" min="0" max="500" value="50" class="w-full">
+                                </div>
+                                <div id="padIndividual" class="hidden">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="filter-row"><label>Atas <span class="val"
+                                                    id="val-padTop">50</span></label><input type="range" id="padTop"
+                                                min="0" max="500" value="50" class="w-full"></div>
+                                        <div class="filter-row"><label>Kanan <span class="val"
+                                                    id="val-padRight">50</span></label><input type="range" id="padRight"
+                                                min="0" max="500" value="50" class="w-full"></div>
+                                        <div class="filter-row"><label>Bawah <span class="val"
+                                                    id="val-padBottom">50</span></label><input type="range"
+                                                id="padBottom" min="0" max="500" value="50" class="w-full"></div>
+                                        <div class="filter-row"><label>Kiri <span class="val"
+                                                    id="val-padLeft">50</span></label><input type="range" id="padLeft"
+                                                min="0" max="500" value="50" class="w-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-xs font-bold" style="color:var(--text-muted);">BG Padding</span>
+                                    <input type="color" id="padBgColor" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WATERMARK -->
+                <div class="control-section">
+                    <div class="section-header" onclick="toggleSection('watermark')">
+                        <h3 class="section-title">Watermark</h3>
+                        <svg class="section-chevron" id="chevron-watermark" viewBox="0 0 20 20" fill="currentColor"
+                            style="transform:rotate(-90deg)">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="section-collapse collapsed" id="section-watermark">
+                        <div class="section-content-wrapper">
+                            <div class="toggle-row">
+                                <div class="toggle-switch" id="toggle-watermark"
+                                    onclick="toggleSwitch(this,'watermark')"></div>
+                                <span class="text-xs font-bold" style="color:var(--text-muted);">Aktifkan
+                                    Watermark</span>
+                            </div>
+                            <div id="watermark-controls" class="hidden"
+                                style="padding-left:8px; border-left: 3px solid var(--border-light);">
+                                <input type="text" id="wmText" value="Zocrop.io" placeholder="Teks watermark..."
+                                    class="input-pop w-full py-2 px-3 text-xs mb-2">
+                                <div class="filter-row">
+                                    <label>Ukuran <span class="val" id="val-wmSize">32px</span></label>
+                                    <input type="range" id="wmSize" min="8" max="200" value="32" class="w-full">
+                                </div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs font-bold" style="color:var(--text-muted);">Warna</span>
+                                    <input type="color" id="wmColor" value="#ffffff">
+                                    <div class="filter-row flex-1 mb-0" style="margin-bottom:0">
+                                        <label>Opasitas <span class="val" id="val-wmOpacity">50%</span></label>
+                                        <input type="range" id="wmOpacity" min="5" max="100" value="50" class="w-full">
+                                    </div>
+                                </div>
+                                <div class="align-grid" style="max-width:140px">
+                                    <button class="align-btn wm-pos" data-wm="tl" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="1" y="1" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos" data-wm="tc" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="3.5" y="1" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos" data-wm="tr" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="6" y="1" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos" data-wm="ml" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="1" y="3.5" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos" data-wm="mc" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="3.5" y="3.5" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos" data-wm="mr" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="6" y="3.5" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos active" data-wm="bl" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="1" y="6" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos" data-wm="bc" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="3.5" y="6" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                    <button class="align-btn wm-pos" data-wm="br" style="aspect-ratio:1.2;"><svg
+                                            viewBox="0 0 10 10">
+                                            <rect x="6" y="6" width="3" height="3" fill="currentColor" />
+                                        </svg></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PENGATURAN -->
+                <div class="control-section">
+                    <div class="section-header" onclick="toggleSection('settings')">
+                        <h3 class="section-title">Pengaturan Ekspor</h3>
+                        <svg class="section-chevron" id="chevron-settings" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="section-collapse" id="section-settings">
+                        <div class="section-content-wrapper">
+                            <select id="formatSelect" class="input-pop w-full px-2 py-1-5 text-sm mb-3">
+                                <option value="png">PNG (Transparan)</option>
+                                <option value="jpeg">JPEG (Kompak)</option>
+                                <option value="webp">WebP (Modern)</option>
+                            </select>
+                            <div id="qualityWrap" class="hidden mb-3">
+                                <label class="text-xs font-bold mb-1 flex justify-between"
+                                    style="color:var(--text-muted);">
+                                    <span>Kualitas</span>
+                                    <span id="qualityVal" class="val"
+                                        style="color:var(--accent-primary-dark);">92%</span>
+                                </label>
+                                <input type="range" id="qualitySlider" min="10" max="100" value="92" class="w-full">
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="checkbox" id="customBgCheck">
+                                <label for="customBgCheck" class="text-xs font-bold flex-1"
+                                    style="color:var(--text-muted);">Background Warna Canvas</label>
+                                <input type="color" id="bgColorPicker" value="#ffffff" class="ml-auto">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info HUD -->
+                <div class="stats-hud">
+                    <div class="stats-item"><span class="stats-label">Asli:</span><span class="stats-val"
+                            id="infoOriginal">-</span></div>
+                    <div class="stats-item"><span class="stats-label">Output:</span><span class="stats-val"
+                            id="infoOutput">-</span></div>
+                    <div class="stats-item"><span class="stats-label">Estimasi:</span><span class="stats-val"
+                            id="infoEstSize" style="color:#34D399;">-</span></div>
+                </div>
+
+                <!-- Shortcuts -->
+                <div class="text-xs flex flex-wrap gap-2 justify-center"
+                    style="color:var(--text-muted-dark); line-height:1.6;">
+                    <span><kbd class="kbd">Spasi</kbd> Bandingkan</span>
+                    <span><kbd class="kbd">R</kbd> Reset</span>
+                    <span><kbd class="kbd">Ctrl+E</kbd> Ekspor</span>
+                </div>
+
+            </div>
+
+            <!-- Sidebar Actions -->
+            <div class="p-4 border-t space-y-2 flex-shrink-0"
+                style="border-color:var(--border-color); background: var(--bg-sidebar);">
+                <button id="exportBtn" disabled
+                    class="btn-pop btn-primary w-full py-3 text-sm flex items-center justify-center gap-2">
+
+                    EXPORT GAMBAR
+                </button>
+                <p style="height: 5px;">
+                    &nbsp;
+                </p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="clearBtn" class="btn-pop w-full py-2 text-xs flex items-center justify-center gap-1">
+
+                        Hapus
+                    </button>
+                    <button id="compareBtn"
+                        class="btn-pop btn-pink w-full py-2 text-xs flex items-center justify-center gap-1">
+
+                        Bandingkan
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Canvas Area -->
+        <div class="flex-1 flex flex-col relative" style="background: #E8F0FE;">
+
+            <!-- Quick Floating Toolbar (Undo, Redo, Compare, Export) -->
+            <div id="quickToolbar" class="quick-toolbar hidden">
+                <button id="undoBtn" class="btn-pop" title="Undo (Ctrl+Z)" disabled>
+                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.8;">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                    </svg>
+                </button>
+                <button id="redoBtn" class="btn-pop" title="Redo (Ctrl+Y)" disabled>
+                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.8;">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 10H11a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                    </svg>
+                </button>
+                <button id="quickCompareBtn" class="btn-pop btn-pink" title="Bandingkan Gambar (Tahan/Klik)">
+                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.5;">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                </button>
+                <button id="quickExportBtn" class="btn-pop btn-primary" title="Export Gambar">
+                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.8;">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="viewportContainer" class="flex-1 relative overflow-hidden flex items-center justify-center p-4">
+
+                <!-- Empty State -->
+                <div id="emptyState"
+                    class="drop-zone absolute inset-8 flex flex-col items-center justify-center cursor-pointer z-10">
+                    <div class="drop-icon-wrap mb-4">
+                        <svg class="w-8 h-8 text-white fill-none stroke-current" viewBox="0 0 24 24"
+                            style="stroke-width: 2.2;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-extrabold mb-1"
+                        style="font-family:'Fredoka',sans-serif; color:var(--accent-primary-dark);">Seret &amp; Taruh
+                        Gambar</h3>
+                    <p class="text-sm text-center mb-4" style="color:var(--text-muted);">Drag &amp; Drop, Paste, atau
+                        Klik Tombol di Bawah</p>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    <button id="browseBtn" class="btn-pop btn-primary px-6 py-2 text-sm">Pilih File Gambar</button>
+                </div>
+
+                <!-- Active Workspace -->
+                <div id="workspace" class="absolute inset-4 hidden">
+                    <div class="workspace-area w-full h-full checker-bg" id="workspaceArea">
+                        <div id="viewportFrame" class="viewport-frame">
+                            <canvas id="previewCanvas"></canvas>
+                        </div>
+                        <div id="compareBadge" class="compare-badge">ASLI</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Zoom -->
+            <div id="zoomBar" class="hidden floating-pill z-20">
+                <span class="font-bold text-xs"
+                    style="color:var(--accent-primary-dark); font-family:'Fredoka',sans-serif;">ZOOM</span>
+                <button id="zoomOutBtn" class="btn-pop w-7 h-7 text-xs font-bold p-0 flex items-center justify-center"
+                    style="border-radius: 50%;">-</button>
+                <input type="range" id="zoomSlider" min="10" max="500" value="100" style="width: 120px;">
+                <button id="zoomInBtn" class="btn-pop w-7 h-7 text-xs font-bold p-0 flex items-center justify-center"
+                    style="border-radius: 50%;">+</button>
+                <div class="size-badge text-center" id="zoomLabel" style="min-width: 50px;">100%</div>
+                <button id="fitBtn" class="btn-pop px-3 py-1 text-xs font-bold" style="border-radius: 99px;">Fit
+                    Screen</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer">
+        <div class="toast-msg" id="toastMsg"></div>
+    </div>
+
+    <script>
+        // === GLOBAL STATE ===
+        var img = null;
+        var imgRatio = 1;
+        var scale = 1;
+        var panX = 0, panY = 0;
+        var flipH = false, flipV = false;
+        var rotation = 0;
+        var isDragging = false, dragStartX = 0, dragStartY = 0, startPanX = 0, startPanY = 0;
+        var lastOutputRatio = 1;
+        var isComparing = false;
+
+        // === UNDO REDO STATE ENGINE ===
+        var undoStack = [];
+        var redoStack = [];
+        var maxHistory = 30;
+        var wheelSaveTimeout = null;
+
+        function getHistoryState() {
+            return {
+                filters: JSON.parse(JSON.stringify(filters)),
+                effects: JSON.parse(JSON.stringify(effects)),
+                scale: scale,
+                panX: panX,
+                panY: panY,
+                flipH: flipH,
+                flipV: flipV,
+                rotation: rotation,
+                width: widthInput.value,
+                height: heightInput.value,
+                lockRatio: lockRatio.checked,
+                customBg: customBgCheck.checked,
+                bgColor: bgColorPicker.value
+            };
+        }
+
+        function applyHistoryState(state) {
+            if (!state) return;
+            filters = JSON.parse(JSON.stringify(state.filters));
+            effects = JSON.parse(JSON.stringify(state.effects));
+            scale = state.scale;
+            panX = state.panX;
+            panY = state.panY;
+            flipH = state.flipH;
+            flipV = state.flipV;
+            rotation = state.rotation;
+            widthInput.value = state.width;
+            heightInput.value = state.height;
+            lockRatio.checked = state.lockRatio;
+            customBgCheck.checked = state.customBg;
+            bgColorPicker.value = state.bgColor;
+
+            syncUIFromState();
+            render();
+        }
+
+        function isIdenticalState(s1, s2) {
+            return JSON.stringify(s1) === JSON.stringify(s2);
+        }
+
+        function saveHistoryState() {
+            if (!img) return;
+            var state = getHistoryState();
+            if (undoStack.length > 0) {
+                var lastState = undoStack[undoStack.length - 1];
+                if (isIdenticalState(state, lastState)) {
+                    return;
+                }
+            }
+            undoStack.push(state);
+            if (undoStack.length > maxHistory) {
+                undoStack.shift();
+            }
+            redoStack = [];
+            updateUndoRedoButtons();
+        }
+
+        function undo() {
+            if (undoStack.length <= 1) return;
+            var currentState = undoStack.pop();
+            redoStack.push(currentState);
+            var prevState = undoStack[undoStack.length - 1];
+            applyHistoryState(prevState);
+            updateUndoRedoButtons();
+            showToast('Undo berhasil');
+        }
+
+        function redo() {
+            if (redoStack.length === 0) return;
+            var nextState = redoStack.pop();
+            undoStack.push(nextState);
+            applyHistoryState(nextState);
+            updateUndoRedoButtons();
+            showToast('Redo berhasil');
+        }
+
+        function updateUndoRedoButtons() {
+            var undoBtn = $('undoBtn');
+            var redoBtn = $('redoBtn');
+            if (undoBtn) undoBtn.disabled = (undoStack.length <= 1);
+            if (redoBtn) redoBtn.disabled = (redoStack.length === 0);
+        }
+
+        function syncUIFromState() {
+            var filterKeys = ['brightness', 'contrast', 'saturate', 'blur', 'grayscale', 'sepia', 'hueRotate', 'invert'];
+            filterKeys.forEach(function (key) {
+                var slider = $('filter-' + key);
+                if (slider) slider.value = filters[key];
+                var valEl = $('val-' + key);
+                if (valEl) {
+                    var unit = key === 'blur' ? 'px' : key === 'hueRotate' ? '\u00B0' : '%';
+                    valEl.textContent = filters[key] + unit;
+                }
+            });
+
+            var matchedPreset = 'original';
+            for (var presetName in filterPresets) {
+                var preset = filterPresets[presetName];
+                var match = true;
+                filterKeys.forEach(function (key) {
+                    if (filters[key] !== preset[key]) match = false;
+                });
+                if (match) { matchedPreset = presetName; break; }
+            }
+            document.querySelectorAll('.filter-preset').forEach(function (p) {
+                if (p.dataset.preset === matchedPreset) p.classList.add('active');
+                else p.classList.remove('active');
+            });
+
+            var switchKeys = ['shadow', 'border', 'padding', 'watermark'];
+            switchKeys.forEach(function (key) {
+                var toggle = $('toggle-' + key);
+                if (toggle) {
+                    if (effects[key]) toggle.classList.add('on');
+                    else toggle.classList.remove('on');
+                }
+                var ctrl = $(key + '-controls');
+                if (ctrl) {
+                    if (effects[key]) ctrl.classList.remove('hidden');
+                    else ctrl.classList.add('hidden');
+                }
+            });
+
+            var effectSliders = ['shadowBlur', 'shadowX', 'shadowY', 'shadowOpacity', 'borderWidth', 'corners', 'padAll', 'padTop', 'padRight', 'padBottom', 'padLeft', 'wmSize', 'wmOpacity'];
+            effectSliders.forEach(function (key) {
+                var slider = $(key);
+                if (slider) slider.value = effects[key];
+                var valEl = $('val-' + key);
+                if (valEl) {
+                    var suffix = '';
+                    if (key.includes('Opacity')) suffix = '%';
+                    else if (key.includes('Blur') || key.includes('Width') || key === 'corners' || key.includes('pad') || key.includes('Size')) suffix = 'px';
+                    valEl.textContent = effects[key] + suffix;
+                }
+            });
+
+            var padLink = $('padLink');
+            if (padLink) {
+                padLink.checked = effects.padUniform;
+                if (effects.padUniform) {
+                    $('padUniform').classList.remove('hidden');
+                    $('padIndividual').classList.add('hidden');
+                } else {
+                    $('padUniform').classList.add('hidden');
+                    $('padIndividual').classList.remove('hidden');
+                }
+            }
+
+            setActiveRotButton(rotation.toString());
+
+            var wmTextEl = $('wmText');
+            if (wmTextEl) wmTextEl.value = effects.wmText;
+            var wmColorEl = $('wmColor');
+            if (wmColorEl) wmColorEl.value = effects.wmColor;
+
+            document.querySelectorAll('.wm-pos').forEach(function (b) {
+                if (b.dataset.wm === effects.wmPos) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+
+            zoomSlider.value = Math.round(scale * 100);
+            zoomLabel.textContent = Math.round(scale * 100) + '%';
+        }
+
+        var filters = {
+            brightness: 100, contrast: 100, saturate: 100,
+            blur: 0, grayscale: 0, sepia: 0,
+            hueRotate: 0, invert: 0
+        };
+
+        var filterPresets = {
+            original: { brightness: 100, contrast: 100, saturate: 100, blur: 0, grayscale: 0, sepia: 0, hueRotate: 0, invert: 0 },
+            bw: { brightness: 100, contrast: 120, saturate: 0, blur: 0, grayscale: 100, sepia: 0, hueRotate: 0, invert: 0 },
+            vintage: { brightness: 110, contrast: 90, saturate: 70, blur: 0, grayscale: 0, sepia: 40, hueRotate: 0, invert: 0 },
+            warm: { brightness: 105, contrast: 105, saturate: 130, blur: 0, grayscale: 0, sepia: 20, hueRotate: 10, invert: 0 },
+            cool: { brightness: 100, contrast: 110, saturate: 90, blur: 0, grayscale: 0, sepia: 0, hueRotate: 190, invert: 0 },
+            dramatic: { brightness: 90, contrast: 150, saturate: 80, blur: 0, grayscale: 20, sepia: 10, hueRotate: 0, invert: 0 },
+            fade: { brightness: 120, contrast: 80, saturate: 50, blur: 0, grayscale: 30, sepia: 10, hueRotate: 0, invert: 0 },
+            vivid: { brightness: 110, contrast: 130, saturate: 180, blur: 0, grayscale: 0, sepia: 0, hueRotate: 0, invert: 0 }
+        };
+
+        var effects = {
+            shadow: false, shadowBlur: 10, shadowX: 5, shadowY: 5, shadowColor: '#000000', shadowOpacity: 40,
+            border: false, borderWidth: 8, borderColor: '#ffffff',
+            corners: 0,
+            padding: false, padUniform: true, padAll: 50, padTop: 50, padRight: 50, padBottom: 50, padLeft: 50, padBgColor: '#ffffff',
+            watermark: false, wmText: 'Zocrop.io', wmSize: 32, wmColor: '#ffffff', wmOpacity: 50, wmPos: 'bl'
+        };
+
+        // === DOM REFS ===
+        function $(id) { return document.getElementById(id); }
+
+        var viewportContainer = $('viewportContainer'), workspaceArea = $('workspaceArea');
+        var viewportFrame = $('viewportFrame'), previewCanvas = $('previewCanvas');
+        var ctx = previewCanvas.getContext('2d');
+        var emptyState = $('emptyState'), workspace = $('workspace');
+        var zoomBar = $('zoomBar'), zoomSlider = $('zoomSlider'), zoomLabel = $('zoomLabel');
+        var widthInput = $('widthInput'), heightInput = $('heightInput'), lockRatio = $('lockRatio');
+        var formatSelect = $('formatSelect'), qualitySlider = $('qualitySlider'), qualityVal = $('qualityVal');
+        var qualityWrap = $('qualityWrap'), customBgCheck = $('customBgCheck'), bgColorPicker = $('bgColorPicker');
+        var exportBtn = $('exportBtn'), clearBtn = $('clearBtn'), fileInput = $('fileInput');
+        var browseBtn = $('browseBtn'), statusSize = $('statusSize');
+        var compareBadge = $('compareBadge');
+
+        // === UTILS ===
+        function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+
+        function showToast(msg) {
+            var t = $('toastMsg');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(function () { t.classList.remove('show'); }, 2200);
+        }
+
+        function toggleSection(name) {
+            var sec = $('section-' + name);
+            var chev = $('chevron-' + name);
+            if (!sec) return;
+            sec.classList.toggle('collapsed');
+            if (chev) {
+                chev.style.transform = sec.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0deg)';
+            }
+        }
+
+        function toggleSwitch(el, key) {
+            effects[key] = !effects[key];
+            if (effects[key]) el.classList.add('on'); else el.classList.remove('on');
+            var ctrl = $(key + '-controls');
+            if (ctrl) { if (effects[key]) ctrl.classList.remove('hidden'); else ctrl.classList.add('hidden'); }
+            render();
+            saveHistoryState();
+        }
+
+        // === FRAME MANAGEMENT ===
+        function updateFrameSize() {
+            var containerRect = workspaceArea.getBoundingClientRect();
+            var containerW = containerRect.width - 40;
+            var containerH = containerRect.height - 40;
+            var outW = parseInt(widthInput.value) || 1;
+            var outH = parseInt(heightInput.value) || 1;
+            var outRatio = outW / outH;
+            var frameW, frameH;
+
+            if (outRatio > containerW / containerH) {
+                frameW = containerW; frameH = containerW / outRatio;
+            } else {
+                frameH = containerH; frameW = containerH * outRatio;
+            }
+
+            viewportFrame.style.width = frameW + 'px';
+            viewportFrame.style.height = frameH + 'px';
+            statusSize.textContent = outW + ' x ' + outH;
+            $('infoOutput').textContent = outW + ' x ' + outH;
+            render();
+        }
+
+        // === IMAGE LOADING ===
+        function loadImage(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                img = new Image();
+                img.onload = function () {
+                    imgRatio = img.width / img.height;
+                    widthInput.value = img.width;
+                    heightInput.value = img.height;
+                    $('infoOriginal').textContent = img.width + ' x ' + img.height;
+                    lastOutputRatio = imgRatio;
+                    emptyState.classList.add('hidden');
+                    workspace.classList.remove('hidden');
+                    zoomBar.classList.remove('hidden');
+                    $('quickToolbar').classList.remove('hidden');
+                    statusSize.classList.remove('hidden');
+                    exportBtn.disabled = false;
+                    resetView();
+                    updateFrameSize();
+                    setActiveAlignButton('mc');
+
+                    // Initialize history stack
+                    undoStack = [];
+                    redoStack = [];
+                    saveHistoryState(); // Save initial loaded state
+
+                    showToast('Gambar berhasil dimuat!');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetView() {
+            scale = 1; panX = 0; panY = 0; flipH = false; flipV = false; rotation = 0;
+            zoomSlider.value = 100; zoomLabel.textContent = '100%';
+            setActiveRotButton('0');
+            render();
+        }
+
+        // === CORE RENDER ===
+        function buildFilterString() {
+            return 'brightness(' + (filters.brightness / 100) + ') ' +
+                'contrast(' + (filters.contrast / 100) + ') ' +
+                'saturate(' + (filters.saturate / 100) + ') ' +
+                'blur(' + filters.blur + 'px) ' +
+                'grayscale(' + (filters.grayscale / 100) + ') ' +
+                'sepia(' + (filters.sepia / 100) + ') ' +
+                'hue-rotate(' + filters.hueRotate + 'deg) ' +
+                'invert(' + (filters.invert / 100) + ')';
+        }
+
+        function render() {
+            if (!img) return;
+            var frameRect = viewportFrame.getBoundingClientRect();
+            var viewW = frameRect.width;
+            var viewH = frameRect.height;
+            var dpr = window.devicePixelRatio || 1;
+
+            previewCanvas.width = viewW * dpr;
+            previewCanvas.height = viewH * dpr;
+            previewCanvas.style.width = viewW + 'px';
+            previewCanvas.style.height = viewH + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, viewW, viewH);
+
+            // Canvas background fill
+            if (customBgCheck.checked) {
+                ctx.fillStyle = bgColorPicker.value;
+                ctx.fillRect(0, 0, viewW, viewH);
+            }
+
+            var outW = parseInt(widthInput.value) || 1;
+            var outH = parseInt(heightInput.value) || 1;
+            var pT = effects.padding ? (effects.padUniform ? effects.padAll : effects.padTop) : 0;
+            var pR = effects.padding ? (effects.padUniform ? effects.padAll : effects.padRight) : 0;
+            var pB = effects.padding ? (effects.padUniform ? effects.padAll : effects.padBottom) : 0;
+            var pL = effects.padding ? (effects.padUniform ? effects.padAll : effects.padLeft) : 0;
+
+            var scPadT = pT * (viewH / outH);
+            var scPadR = pR * (viewW / outW);
+            var scPadB = pB * (viewH / outH);
+            var scPadL = pL * (viewW / outW);
+
+            if (effects.padding) {
+                ctx.fillStyle = effects.padBgColor;
+                ctx.fillRect(0, 0, viewW, viewH);
+            }
+
+            var imgAreaW = viewW - scPadL - scPadR;
+            var imgAreaH = viewH - scPadT - scPadB;
+            var imgAreaCX = scPadL + imgAreaW / 2;
+            var imgAreaCY = scPadT + imgAreaH / 2;
+
+            var currentImgRatio = imgRatio;
+            if (rotation === 90 || rotation === 270) {
+                currentImgRatio = 1 / imgRatio;
+            }
+
+            var viewRatio = imgAreaW / imgAreaH;
+            var baseW, baseH;
+
+            if (currentImgRatio > viewRatio) {
+                baseW = imgAreaW;
+                baseH = imgAreaW / currentImgRatio;
+            } else {
+                baseH = imgAreaH;
+                baseW = imgAreaH * currentImgRatio;
+            }
+
+            var displayW = baseW * scale;
+            var displayH = baseH * scale;
+
+            ctx.save();
+
+            if (!isComparing) {
+                ctx.filter = buildFilterString();
+            } else {
+                ctx.filter = 'none';
+            }
+
+            if (effects.shadow && !isComparing) {
+                var hex = effects.shadowColor;
+                var r = parseInt(hex.slice(1, 3), 16);
+                var g = parseInt(hex.slice(3, 5), 16);
+                var b = parseInt(hex.slice(5, 7), 16);
+                ctx.shadowColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (effects.shadowOpacity / 100) + ')';
+                ctx.shadowBlur = effects.shadowBlur;
+                ctx.shadowOffsetX = effects.shadowX;
+                ctx.shadowOffsetY = effects.shadowY;
+            }
+
+            ctx.translate(imgAreaCX + panX, imgAreaCY + panY);
+            ctx.rotate(rotation * Math.PI / 180);
+            ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+
+            if (effects.border && !isComparing) {
+                ctx.fillStyle = effects.borderColor;
+                var bw = effects.borderWidth * (viewW / outW);
+                ctx.fillRect(-displayW / 2 - bw, -displayH / 2 - bw, displayW + bw * 2, displayH + bw * 2);
+                ctx.shadowColor = 'transparent';
+            }
+
+            if (effects.corners > 0 && !isComparing) {
+                var cr = effects.corners * (viewW / outW);
+                ctx.beginPath();
+                ctx.roundRect(-displayW / 2, -displayH / 2, displayW, displayH, cr);
+                ctx.clip();
+            }
+
+            ctx.drawImage(img, -displayW / 2, -displayH / 2, displayW, displayH);
+            ctx.restore();
+
+            // Watermark
+            if (effects.watermark && effects.wmText.trim() !== '' && !isComparing) {
+                ctx.save();
+                var wmSizeSc = effects.wmSize * (viewW / outW);
+                ctx.font = 'bold ' + wmSizeSc + 'px "Nunito", sans-serif';
+                ctx.fillStyle = effects.wmColor;
+                ctx.globalAlpha = effects.wmOpacity / 100;
+                var txtM = ctx.measureText(effects.wmText);
+                var wmx = 0, wmy = 0;
+                var pad = 20 * (viewW / outW);
+                switch (effects.wmPos) {
+                    case 'tl': wmx = pad; wmy = wmSizeSc + pad; break;
+                    case 'tc': wmx = (viewW - txtM.width) / 2; wmy = wmSizeSc + pad; break;
+                    case 'tr': wmx = viewW - txtM.width - pad; wmy = wmSizeSc + pad; break;
+                    case 'ml': wmx = pad; wmy = viewH / 2 + wmSizeSc / 3; break;
+                    case 'mc': wmx = (viewW - txtM.width) / 2; wmy = viewH / 2 + wmSizeSc / 3; break;
+                    case 'mr': wmx = viewW - txtM.width - pad; wmy = viewH / 2 + wmSizeSc / 3; break;
+                    case 'bl': wmx = pad; wmy = viewH - pad; break;
+                    case 'bc': wmx = (viewW - txtM.width) / 2; wmy = viewH - pad; break;
+                    case 'br': wmx = viewW - txtM.width - pad; wmy = viewH - pad; break;
+                }
+                ctx.fillText(effects.wmText, wmx, wmy);
+                ctx.restore();
+            }
+
+            estimateFileSize();
+        }
+
+        // === FILE SIZE ESTIMATION ===
+        function estimateFileSize() {
+            if (!img) return;
+            var outW = parseInt(widthInput.value) || 1080;
+            var outH = parseInt(heightInput.value) || 1080;
+            var px = outW * outH;
+            var fmt = formatSelect.value;
+            var q = qualitySlider.value / 100;
+            var bytes = 0;
+            if (fmt === 'png') { bytes = px * 2.2; }
+            else if (fmt === 'jpeg') { bytes = px * q * 0.7; }
+            else { bytes = px * q * 0.55; }
+            var kb = Math.round(bytes / 1024);
+            var mb = (kb / 1024).toFixed(1);
+            $('infoEstSize').textContent = kb > 1024 ? mb + ' MB' : kb + ' KB';
+        }
+
+        // === ALIGNMENT ===
+        function alignImage(position) {
+            if (!img) return;
+            var frameRect = viewportFrame.getBoundingClientRect();
+            var viewW = frameRect.width, viewH = frameRect.height;
+            var outW = parseInt(widthInput.value) || 1, outH = parseInt(heightInput.value) || 1;
+
+            // BUG FIX: was referencing open_browser_url — now correctly uses effects.padAll
+            var pT = effects.padding ? (effects.padUniform ? effects.padAll : effects.padTop) : 0;
+            var pR = effects.padding ? (effects.padUniform ? effects.padAll : effects.padRight) : 0;
+            var pB = effects.padding ? (effects.padUniform ? effects.padAll : effects.padBottom) : 0;
+            var pL = effects.padding ? (effects.padUniform ? effects.padAll : effects.padLeft) : 0;
+
+            var scPadT = pT * (viewH / outH), scPadR = pR * (viewW / outW);
+            var scPadB = pB * (viewH / outH), scPadL = pL * (viewW / outW);
+            var imgAreaW = viewW - scPadL - scPadR, imgAreaH = viewH - scPadT - scPadB;
+
+            var currentImgRatio = imgRatio;
+            if (rotation === 90 || rotation === 270) currentImgRatio = 1 / imgRatio;
+
+            var viewRatio = imgAreaW / imgAreaH;
+            var baseW, baseH;
+            if (currentImgRatio > viewRatio) { baseW = imgAreaW; baseH = imgAreaW / currentImgRatio; }
+            else { baseH = imgAreaH; baseW = imgAreaH * currentImgRatio; }
+            var displayW = baseW * scale, displayH = baseH * scale;
+            var pX = 0, pY = 0;
+
+            switch (position) {
+                case 'tl': pX = (displayW - imgAreaW) / 2; pY = (displayH - imgAreaH) / 2; break;
+                case 'tc': pX = 0; pY = (displayH - imgAreaH) / 2; break;
+                case 'tr': pX = -(displayW - imgAreaW) / 2; pY = (displayH - imgAreaH) / 2; break;
+                case 'ml': pX = (displayW - imgAreaW) / 2; pY = 0; break;
+                case 'mc': pX = 0; pY = 0; break;
+                case 'mr': pX = -(displayW - imgAreaW) / 2; pY = 0; break;
+                case 'bl': pX = (displayW - imgAreaW) / 2; pY = -(displayH - imgAreaH) / 2; break;
+                case 'bc': pX = 0; pY = -(displayH - imgAreaH) / 2; break;
+                case 'br': pX = -(displayW - imgAreaW) / 2; pY = -(displayH - imgAreaH) / 2; break;
+            }
+            panX = pX; panY = pY; render();
+            saveHistoryState();
+        }
+
+        function setActiveAlignButton(id) {
+            document.querySelectorAll('.align-btn:not(.wm-pos)').forEach(function (b) { b.classList.remove('active'); });
+            var btn = document.querySelector('[data-align="' + id + '"]');
+            if (btn) btn.classList.add('active');
+        }
+
+        function setActiveRotButton(val) {
+            document.querySelectorAll('.rot-btn').forEach(function (b) { b.classList.remove('active'); });
+            var btn = document.querySelector('[data-rot="' + val + '"]');
+            if (btn) btn.classList.add('active');
+        }
+
+        // === EXPORT ===
+        function exportImage() {
+            if (!img) return;
+            var outW = parseInt(widthInput.value) || 1080;
+            var outH = parseInt(heightInput.value) || 1080;
+            var fmt = formatSelect.value;
+            var quality = qualitySlider.value / 100;
+            var expCanvas = document.createElement('canvas');
+            expCanvas.width = outW; expCanvas.height = outH;
+            var expCtx = expCanvas.getContext('2d');
+
+            if (customBgCheck.checked || fmt === 'jpeg') {
+                expCtx.fillStyle = customBgCheck.checked ? bgColorPicker.value : '#ffffff';
+                expCtx.fillRect(0, 0, outW, outH);
+            }
+
+            // BUG FIX: was referencing open_browser_url — now correctly uses effects.padAll
+            var pT = effects.padding ? (effects.padUniform ? effects.padAll : effects.padTop) : 0;
+            var pR = effects.padding ? (effects.padUniform ? effects.padAll : effects.padRight) : 0;
+            var pB = effects.padding ? (effects.padUniform ? effects.padAll : effects.padBottom) : 0;
+            var pL = effects.padding ? (effects.padUniform ? effects.padAll : effects.padLeft) : 0;
+
+            if (effects.padding) {
+                expCtx.fillStyle = effects.padBgColor;
+                expCtx.fillRect(0, 0, outW, outH);
+            }
+
+            var imgAreaW = outW - pL - pR;
+            var imgAreaH = outH - pT - pB;
+            var imgAreaCX = pL + imgAreaW / 2;
+            var imgAreaCY = pT + imgAreaH / 2;
+
+            var currentImgRatio = imgRatio;
+            if (rotation === 90 || rotation === 270) currentImgRatio = 1 / imgRatio;
+
+            var viewRatio = imgAreaW / imgAreaH;
+            var baseW, baseH;
+            if (currentImgRatio > viewRatio) { baseW = imgAreaW; baseH = imgAreaW / currentImgRatio; }
+            else { baseH = imgAreaH; baseW = imgAreaH * currentImgRatio; }
+
+            var panScale = imgAreaW / (viewportFrame.getBoundingClientRect().width - (effects.padding ? pR * (viewportFrame.getBoundingClientRect().width / outW) : 0) - (effects.padding ? pL * (viewportFrame.getBoundingClientRect().width / outW) : 0));
+            var displayW = baseW * scale;
+            var displayH = baseH * scale;
+
+            expCtx.save();
+            expCtx.filter = buildFilterString();
+
+            if (effects.shadow) {
+                var hex = effects.shadowColor;
+                var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+                expCtx.shadowColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (effects.shadowOpacity / 100) + ')';
+                expCtx.shadowBlur = effects.shadowBlur;
+                expCtx.shadowOffsetX = effects.shadowX;
+                expCtx.shadowOffsetY = effects.shadowY;
+            }
+
+            expCtx.translate(imgAreaCX + panX * panScale, imgAreaCY + panY * panScale);
+            expCtx.rotate(rotation * Math.PI / 180);
+            expCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+
+            if (effects.border) {
+                expCtx.fillStyle = effects.borderColor;
+                expCtx.fillRect(-displayW / 2 - effects.borderWidth, -displayH / 2 - effects.borderWidth, displayW + effects.borderWidth * 2, displayH + effects.borderWidth * 2);
+                expCtx.shadowColor = 'transparent';
+            }
+
+            if (effects.corners > 0) {
+                expCtx.beginPath();
+                expCtx.roundRect(-displayW / 2, -displayH / 2, displayW, displayH, effects.corners);
+                expCtx.clip();
+            }
+
+            expCtx.drawImage(img, -displayW / 2, -displayH / 2, displayW, displayH);
+            expCtx.restore();
+
+            if (effects.watermark && effects.wmText.trim() !== '') {
+                expCtx.save();
+                expCtx.font = 'bold ' + effects.wmSize + 'px "Nunito", sans-serif';
+                expCtx.fillStyle = effects.wmColor;
+                expCtx.globalAlpha = effects.wmOpacity / 100;
+                var txtM = expCtx.measureText(effects.wmText);
+                var wmx = 0, wmy = 0;
+                switch (effects.wmPos) {
+                    case 'tl': wmx = 20; wmy = effects.wmSize + 20; break;
+                    case 'tc': wmx = (outW - txtM.width) / 2; wmy = effects.wmSize + 20; break;
+                    case 'tr': wmx = outW - txtM.width - 20; wmy = effects.wmSize + 20; break;
+                    case 'ml': wmx = 20; wmy = outH / 2 + effects.wmSize / 3; break;
+                    case 'mc': wmx = (outW - txtM.width) / 2; wmy = outH / 2 + effects.wmSize / 3; break;
+                    case 'mr': wmx = outW - txtM.width - 20; wmy = outH / 2 + effects.wmSize / 3; break;
+                    case 'bl': wmx = 20; wmy = outH - 20; break;
+                    case 'bc': wmx = (outW - txtM.width) / 2; wmy = outH - 20; break;
+                    case 'br': wmx = outW - txtM.width - 20; wmy = outH - 20; break;
+                }
+                expCtx.fillText(effects.wmText, wmx, wmy);
+                expCtx.restore();
+            }
+
+            var mime = fmt === 'png' ? 'image/png' : fmt === 'jpeg' ? 'image/jpeg' : 'image/webp';
+            var url = expCanvas.toDataURL(mime, fmt === 'png' ? 1.0 : quality);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = 'Zocrop.io-' + outW + 'x' + outH + '.' + fmt;
+            link.click();
+            showToast('Ekspor gambar berhasil!');
+        }
+
+        // === EVENT HANDLERS ===
+        browseBtn.addEventListener('click', function () { fileInput.click(); });
+        fileInput.addEventListener('change', function (e) { if (e.target.files[0]) loadImage(e.target.files[0]); });
+
+        viewportContainer.addEventListener('dragover', function (e) { e.preventDefault(); emptyState.classList.add('drag-over'); });
+        viewportContainer.addEventListener('dragleave', function () { emptyState.classList.remove('drag-over'); });
+        viewportContainer.addEventListener('drop', function (e) { e.preventDefault(); emptyState.classList.remove('drag-over'); if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]); });
+
+        document.addEventListener('paste', function (e) {
+            var items = e.clipboardData.items;
+            for (var i = 0; i < items.length; i++) { if (items[i].type.startsWith('image/')) { loadImage(items[i].getAsFile()); break; } }
+        });
+
+        // Zoom
+        zoomSlider.addEventListener('input', function (e) { scale = parseInt(e.target.value) / 100; zoomLabel.textContent = e.target.value + '%'; render(); });
+        zoomSlider.addEventListener('change', saveHistoryState);
+        $('zoomInBtn').addEventListener('click', function () { var val = clamp(parseInt(zoomSlider.value) + 20, 10, 500); zoomSlider.value = val; scale = val / 100; zoomLabel.textContent = val + '%'; render(); saveHistoryState(); });
+        $('zoomOutBtn').addEventListener('click', function () { var val = clamp(parseInt(zoomSlider.value) - 20, 10, 500); zoomSlider.value = val; scale = val / 100; zoomLabel.textContent = val + '%'; render(); saveHistoryState(); });
+        $('fitBtn').addEventListener('click', function () { zoomSlider.value = 100; scale = 1; zoomLabel.textContent = '100%'; alignImage('mc'); saveHistoryState(); });
+
+        // Pan
+        viewportFrame.addEventListener('mousedown', function (e) { if (!img) return; isDragging = true; dragStartX = e.clientX; dragStartY = e.clientY; startPanX = panX; startPanY = panY; viewportFrame.style.cursor = 'grabbing'; });
+        window.addEventListener('mousemove', function (e) { if (!isDragging) return; panX = startPanX + (e.clientX - dragStartX); panY = startPanY + (e.clientY - dragStartY); render(); document.querySelectorAll('.align-btn:not(.wm-pos)').forEach(function (b) { b.classList.remove('active'); }); });
+        window.addEventListener('mouseup', function () { if (isDragging) { isDragging = false; viewportFrame.style.cursor = 'grab'; saveHistoryState(); } });
+        viewportFrame.addEventListener('wheel', function (e) {
+            if (!img) return;
+            e.preventDefault();
+            var delta = e.deltaY > 0 ? -15 : 15;
+            var val = clamp(parseInt(zoomSlider.value) + delta, 10, 500);
+            zoomSlider.value = val;
+            scale = val / 100;
+            zoomLabel.textContent = val + '%';
+            render();
+
+            // Debounce history state saves during wheel zooming
+            clearTimeout(wheelSaveTimeout);
+            wheelSaveTimeout = setTimeout(saveHistoryState, 300);
+        }, { passive: false });
+
+        // Aspect lock
+        widthInput.addEventListener('input', function () { if (lockRatio.checked) heightInput.value = Math.round(widthInput.value / lastOutputRatio); else lastOutputRatio = (parseInt(widthInput.value) || 1) / (parseInt(heightInput.value) || 1); updateFrameSize(); });
+        widthInput.addEventListener('change', saveHistoryState);
+        heightInput.addEventListener('input', function () { if (lockRatio.checked) widthInput.value = Math.round(heightInput.value * lastOutputRatio); else lastOutputRatio = (parseInt(widthInput.value) || 1) / (parseInt(heightInput.value) || 1); updateFrameSize(); });
+        heightInput.addEventListener('change', saveHistoryState);
+
+        // Presets
+        document.querySelectorAll('.preset-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () { widthInput.value = this.dataset.w; heightInput.value = this.dataset.h; lastOutputRatio = parseInt(this.dataset.w) / parseInt(this.dataset.h); updateFrameSize(); saveHistoryState(); });
+        });
+
+        // Align
+        document.querySelectorAll('.align-btn:not(.wm-pos)').forEach(function (btn) {
+            btn.addEventListener('click', function () { setActiveAlignButton(this.dataset.align); alignImage(this.dataset.align); });
+        });
+
+        // Transform
+        document.querySelectorAll('.rot-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () { rotation = parseInt(this.dataset.rot); setActiveRotButton(this.dataset.rot); render(); saveHistoryState(); });
+        });
+
+        $('flipH').addEventListener('click', function () { flipH = !flipH; render(); saveHistoryState(); });
+        $('flipV').addEventListener('click', function () { flipV = !flipV; render(); saveHistoryState(); });
+        $('resetTransform').addEventListener('click', function () { resetView(); saveHistoryState(); });
+
+        // Format
+        formatSelect.addEventListener('change', function () { qualityWrap.classList.toggle('hidden', formatSelect.value === 'png'); estimateFileSize(); saveHistoryState(); });
+        qualitySlider.addEventListener('input', function () { qualityVal.textContent = qualitySlider.value + '%'; });
+        qualitySlider.addEventListener('change', saveHistoryState);
+        customBgCheck.addEventListener('change', function () { render(); saveHistoryState(); });
+        bgColorPicker.addEventListener('input', render);
+        bgColorPicker.addEventListener('change', saveHistoryState);
+
+        // Filter sliders
+        var filterKeys = ['brightness', 'contrast', 'saturate', 'blur', 'grayscale', 'sepia', 'hueRotate', 'invert'];
+        filterKeys.forEach(function (key) {
+            var slider = $('filter-' + key);
+            if (!slider) return;
+            slider.addEventListener('input', function () {
+                filters[key] = parseFloat(this.value);
+                var unit = key === 'blur' ? 'px' : key === 'hueRotate' ? '\u00B0' : '%';
+                $('val-' + key).textContent = this.value + unit;
+                document.querySelectorAll('.filter-preset').forEach(function (p) { p.classList.remove('active'); });
+                render();
+            });
+            slider.addEventListener('change', saveHistoryState);
+        });
+
+        // Filter presets
+        document.querySelectorAll('.filter-preset').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var preset = filterPresets[this.dataset.preset];
+                if (!preset) return;
+                document.querySelectorAll('.filter-preset').forEach(function (p) { p.classList.remove('active'); });
+                this.classList.add('active');
+                filterKeys.forEach(function (key) {
+                    filters[key] = preset[key];
+                    var slider = $('filter-' + key);
+                    if (slider) slider.value = preset[key];
+                    var unit = key === 'blur' ? 'px' : key === 'hueRotate' ? '\u00B0' : '%';
+                    var valEl = $('val-' + key);
+                    if (valEl) valEl.textContent = preset[key] + unit;
+                });
+                render();
+                saveHistoryState();
+            });
+        });
+
+        $('resetFilters').addEventListener('click', function () {
+            document.querySelector('.filter-preset[data-preset="original"]').click();
+            showToast('Filter direset');
+        });
+
+        // Effect sliders
+        var effectSliders = ['shadowBlur', 'shadowX', 'shadowY', 'shadowOpacity', 'borderWidth', 'corners', 'padAll', 'padTop', 'padRight', 'padBottom', 'padLeft', 'wmSize', 'wmOpacity'];
+        effectSliders.forEach(function (key) {
+            var slider = $(key);
+            if (!slider) return;
+            slider.addEventListener('input', function () {
+                effects[key] = parseFloat(this.value);
+                var valEl = $('val-' + key);
+                if (valEl) {
+                    var suffix = '';
+                    if (key.includes('Opacity')) suffix = '%';
+                    else if (key.includes('Blur') || key.includes('Width') || key === 'corners' || key.includes('pad') || key.includes('Size')) suffix = 'px';
+                    valEl.textContent = this.value + suffix;
+                }
+                render();
+            });
+            slider.addEventListener('change', saveHistoryState);
+        });
+
+        // Padding uniform toggle
+        $('padLink').addEventListener('change', function () {
+            effects.padUniform = this.checked;
+            if (this.checked) { $('padUniform').classList.remove('hidden'); $('padIndividual').classList.add('hidden'); }
+            else { $('padUniform').classList.add('hidden'); $('padIndividual').classList.remove('hidden'); }
+            render();
+            saveHistoryState();
+        });
+
+        // Color inputs
+        $('shadowColor').addEventListener('input', function () { effects.shadowColor = this.value; render(); });
+        $('shadowColor').addEventListener('change', saveHistoryState);
+        $('borderColor').addEventListener('input', function () { effects.borderColor = this.value; render(); });
+        $('borderColor').addEventListener('change', saveHistoryState);
+        $('padBgColor').addEventListener('input', function () { effects.padBgColor = this.value; render(); });
+        $('padBgColor').addEventListener('change', saveHistoryState);
+        $('wmColor').addEventListener('input', function () { effects.wmColor = this.value; render(); });
+        $('wmColor').addEventListener('change', saveHistoryState);
+        $('wmText').addEventListener('input', function () { effects.wmText = this.value; render(); });
+        $('wmText').addEventListener('change', saveHistoryState);
+
+        // Watermark position
+        document.querySelectorAll('.wm-pos').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.wm-pos').forEach(function (b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                effects.wmPos = this.dataset.wm;
+                render();
+                saveHistoryState();
+            });
+        });
+
+        // Compare panel mouse triggers
+        function startComparing() { if (!img) return; isComparing = true; compareBadge.classList.add('show'); render(); }
+        function stopComparing() { if (!img) return; isComparing = false; compareBadge.classList.remove('show'); render(); }
+
+        $('compareBtn').addEventListener('mousedown', startComparing);
+        $('compareBtn').addEventListener('mouseup', stopComparing);
+        $('compareBtn').addEventListener('mouseleave', stopComparing);
+
+        // Quick floating toolbar compare (mouse & touch)
+        var quickComp = $('quickCompareBtn');
+        quickComp.addEventListener('mousedown', startComparing);
+        quickComp.addEventListener('mouseup', stopComparing);
+        quickComp.addEventListener('mouseleave', stopComparing);
+        quickComp.addEventListener('touchstart', function (e) { e.preventDefault(); startComparing(); }, { passive: false });
+        quickComp.addEventListener('touchend', function (e) { e.preventDefault(); stopComparing(); }, { passive: false });
+
+        // Undo & Redo Bindings
+        $('undoBtn').addEventListener('click', undo);
+        $('redoBtn').addEventListener('click', redo);
+
+        // Quick Export Binding
+        $('quickExportBtn').addEventListener('click', exportImage);
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.code === 'Space' && !e.repeat) { e.preventDefault(); startComparing(); }
+
+            // Undo shortcut (Ctrl+Z)
+            if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') {
+                e.preventDefault();
+                undo();
+            }
+
+            // Redo shortcut (Ctrl+Y or Ctrl+Shift+Z)
+            if ((e.ctrlKey || e.metaKey) && (e.code === 'KeyY' || (e.shiftKey && e.code === 'KeyZ'))) {
+                e.preventDefault();
+                redo();
+            }
+
+            if (e.code === 'KeyR' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') { resetView(); saveHistoryState(); showToast('View direset'); }
+            if ((e.ctrlKey || e.metaKey) && e.code === 'KeyE') { e.preventDefault(); if (!exportBtn.disabled) exportImage(); }
+        });
+        document.addEventListener('keyup', function (e) {
+            if (e.code === 'Space') { stopComparing(); }
+        });
+
+        // Clean slate and clear routine
+        exportBtn.addEventListener('click', exportImage);
+        clearBtn.addEventListener('click', function () {
+            img = null;
+            emptyState.classList.remove('hidden'); workspace.classList.add('hidden');
+            zoomBar.classList.add('hidden'); statusSize.classList.add('hidden');
+            $('quickToolbar').classList.add('hidden');
+            exportBtn.disabled = true; fileInput.value = '';
+            scale = 1; panX = 0; panY = 0;
+            undoStack = [];
+            redoStack = [];
+            updateUndoRedoButtons();
+            $('infoOriginal').textContent = '-'; $('infoOutput').textContent = '-'; $('infoEstSize').textContent = '-';
+            showToast('Gambar dihapus');
+        });
+
+        // Mobile responsiveness drawers
+        $('sidebarToggle').addEventListener('click', function () { $('sidebar').classList.toggle('open'); $('sidebarOverlay').classList.toggle('active'); });
+        $('sidebarOverlay').addEventListener('click', function () { $('sidebar').classList.remove('open'); $('sidebarOverlay').classList.remove('active'); });
+        $('sidebarCloseBtn').addEventListener('click', function () { $('sidebar').classList.remove('open'); $('sidebarOverlay').classList.remove('active'); });
+
+        window.addEventListener('resize', updateFrameSize);
+    </script>
+</body>
+
+</html>
