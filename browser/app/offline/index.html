@@ -41,8 +41,8 @@
             --shadow-hard-lg: 6px 6px 0 #1D4ED8;
             --shadow-hard-pink: 4px 4px 0 #BE185D;
             --shadow-hard-yellow: 3px 3px 0 #D97706;
-            --transition-bounce: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         *,
@@ -398,6 +398,11 @@
             background: var(--accent-warning);
             border: 2px solid var(--accent-warning-dark);
             clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .logo-icon:hover .logo-star {
+            animation: spin-pulse 1.2s ease-in-out infinite;
         }
 
         .title-text {
@@ -442,6 +447,21 @@
             box-shadow: var(--shadow-hard-sm);
             transition: var(--transition-bounce);
             position: relative;
+        }
+
+        .btn-pop img,
+        .btn-pop svg {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .btn-pop:hover img,
+        .btn-pop:hover svg {
+            transform: scale(1.12) rotate(3deg);
+        }
+
+        .btn-pop:active img,
+        .btn-pop:active svg {
+            transform: scale(0.92);
         }
 
         .btn-pop:hover:not(:disabled) {
@@ -600,6 +620,14 @@
         }
 
         /* === WORKSPACE === */
+        #workspace:not(.hidden) {
+            animation: workspace-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        #emptyState:not(.hidden) {
+            animation: empty-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
         .workspace-area {
             position: relative;
             width: 100%;
@@ -655,6 +683,10 @@
             gap: 12px;
             box-shadow: var(--shadow-hard);
             z-index: 20;
+        }
+
+        .floating-pill:not(.hidden) {
+            animation: float-pill-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         /* === SIDEBAR === */
@@ -1027,12 +1059,14 @@
             z-index: 10;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.15s;
+            transform: scale(0.85);
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             font-family: 'Fredoka', sans-serif;
         }
 
         .compare-badge.show {
             opacity: 1;
+            transform: scale(1);
         }
 
         /* === OFFLINE BADGE === */
@@ -1111,16 +1145,69 @@
             }
         }
 
-        @media (prefers-reduced-motion: reduce) {
+        @keyframes workspace-appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
 
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
             }
         }
+
+        @keyframes empty-appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.96) translateY(5px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes toolbar-appear {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.95);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes float-pill-appear {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px) scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+
+        @keyframes spin-pulse {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.25) rotate(180deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+
 
         /* === MOBILE === */
         .sidebar-toggle {
@@ -1128,16 +1215,21 @@
         }
 
         .sidebar-overlay {
-            display: none;
             position: fixed;
             inset: 0;
-            background: rgba(30, 58, 95, 0.5);
+            background: rgba(30, 58, 95, 0);
             z-index: 25;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, backdrop-filter 0.3s ease, visibility 0.3s;
         }
 
         .sidebar-overlay.active {
-            display: block;
+            opacity: 1;
+            visibility: visible;
+            background: rgba(30, 58, 95, 0.5);
+            backdrop-filter: blur(4px);
         }
 
         @media (max-width: 768px) {
@@ -1189,6 +1281,10 @@
             gap: 8px;
         }
 
+        .quick-toolbar:not(.hidden) {
+            animation: toolbar-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
         .quick-toolbar .btn-pop {
             padding: 0 !important;
             width: 36px !important;
@@ -1235,8 +1331,8 @@
     <!-- Header -->
     <header class="px-6 py-3 flex items-center justify-between flex-shrink-0">
         <div class="flex items-center gap-3">
-            <button class="sidebar-toggle btn-pop btn-primary w-8 h-8 items-center justify-center p-0" id="sidebarToggle"
-                aria-label="Menu">
+            <button class="sidebar-toggle btn-pop btn-primary w-8 h-8 items-center justify-center p-0"
+                id="sidebarToggle" aria-label="Menu">
                 <img src="./svg/burgir.svg" alt="Hamburger" class="w-5 h-5">
             </button>
             <div class="logo-icon">
@@ -1267,7 +1363,8 @@
         <aside id="sidebar" class="flex flex-col overflow-hidden flex-shrink-0 relative" style="width:300px;">
             <!-- Close Button (Mobile Only) -->
             <button class="sidebar-close-btn btn-pop btn-danger w-8 h-8 items-center justify-center p-0"
-                style="border-radius:50% !important; background: var(--accent-danger); border-color: #B91C1C;" id="sidebarCloseBtn" aria-label="Tutup Menu">
+                style="border-radius:50% !important; background: var(--accent-danger); border-color: #B91C1C;"
+                id="sidebarCloseBtn" aria-label="Tutup Menu">
                 <img src="./svg/burgir.svg" alt="Hamburger" class="w-5 h-5">
             </button>
             <div class="flex-1 overflow-y-auto sidebar-scroll p-4 space-y-3">
@@ -1744,28 +1841,16 @@
             <!-- Quick Floating Toolbar (Undo, Redo, Compare, Export) -->
             <div id="quickToolbar" class="quick-toolbar hidden">
                 <button id="undoBtn" class="btn-pop" title="Undo (Ctrl+Z)" disabled>
-                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.8;">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                    </svg>
+                    <img src="./svg/undo.svg" alt="undo" class="w-4 h-4">
                 </button>
                 <button id="redoBtn" class="btn-pop" title="Redo (Ctrl+Y)" disabled>
-                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.8;">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M21 10H11a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
-                    </svg>
+                    <img src="./svg/redo.svg" alt="redo" class="w-4 h-4">
                 </button>
                 <button id="quickCompareBtn" class="btn-pop btn-pink" title="Bandingkan Gambar (Tahan/Klik)">
-                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.5;">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                    </svg>
+                    <img src="./svg/compare.svg" alt="compare" class="w-4 h-4">
                 </button>
                 <button id="quickExportBtn" class="btn-pop btn-primary" title="Export Gambar">
-                    <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" style="stroke-width: 2.8;">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
+                    <img src="./svg/export.svg" alt="export" class="w-4 h-4">
                 </button>
             </div>
 
@@ -1775,10 +1860,7 @@
                 <div id="emptyState"
                     class="drop-zone absolute inset-8 flex flex-col items-center justify-center cursor-pointer z-10">
                     <div class="drop-icon-wrap mb-4">
-                        <svg class="w-8 h-8 text-white fill-none stroke-current" viewBox="0 0 24 24"
-                            style="stroke-width: 2.2;">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
+                        <img src="./svg/aplot.svg" alt="upload" style="width: 2.7rem;">
                     </div>
                     <h3 class="text-lg font-extrabold mb-1"
                         style="font-family:'Fredoka',sans-serif; color:var(--accent-primary-dark);">Seret &amp; Taruh
