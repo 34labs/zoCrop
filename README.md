@@ -1,4 +1,4 @@
-# Zocrop.io
+# "{ - Zocrop.io
 
 Zocrop.io adalah alat pengedit gambar berbasis browser yang sepenuhnya offline dan privat. Didukung oleh teknologi client-side, Zocrop.io memungkinkan pengguna untuk melakukan cropping, zoom, dan penyesuaian gambar secara cepat tanpa perlu mengunggah data ke server.
 
@@ -41,7 +41,41 @@ Zocrop.io dibangun menggunakan teknologi berikut:
 Anda dapat menjalankan kode sumber secara lokal:
 
 ```bash
-git clone https://github.com/34labs/Zocrop.io.git
+git clone https://github.com/34labs/zoCrop.git
 cd Zocrop.io
 npm install
 npm run dev
+```
+
+Lalu buka browser di `http://localhost:3000` untuk menjalankan versi pengembangan.
+
+---
+
+## Kontribusi
+
+Zocrop.io adalah proyek open source yang dikembangkan oleh komunitas 34Labs. Anda dipersilakan untuk berkontribusi, memperbaiki bug, atau menambahkan fitur baru.
+
+- Baca kode sumber di [GitHub Repository](https://github.com/34labs/zoCrop)
+- Lakukan fork, buat branch fitur, dan kirim pull request.
+
+---
+
+## Lisensi
+
+MIT License. Lihat file [LICENSE](LICENSE) untuk detailnya.
+
+---
+
+## Privasi & Keamanan
+
+Semua proses dilakukan di browser Anda. Tidak ada data yang dikirim ke server, menjamin privasi dan keamanan gambar Anda.
+
+---
+
+## Hubungi Kami
+
+Untuk pertanyaan atau dukungan, silakan kunjungi [GitHub Repository](https://github.com/34labs/Zocrop.io).
+
+---
+
+**Nikmati cropping gambar yang cepat, aman, dan mudah dengan Zocrop.io!**
